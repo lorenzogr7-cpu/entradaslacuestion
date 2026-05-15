@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LA CUESTIÓN · PIXEL ART 8-BIT</title>
-    <!-- FUENTE PIXEL PERFECTA -->
+    <title>LA CUESTIÓN · 8-BIT PIXEL ART</title>
+    <!-- FUENTE 8-BIT OBLIGATORIA -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
+        /* RESET Y ESTILOS PIXEL PERFECTOS */
         * {
             margin: 0;
             padding: 0;
@@ -22,9 +23,10 @@
             font-family: 'Press Start 2P', 'Courier New', monospace;
             font-size: 14px;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* Contenedores pantalla completa, SIN marcos ni bordes extra */
+        /* Pantallas a full, sin bordes */
         .screen {
             width: 100%;
             min-height: 100vh;
@@ -40,7 +42,7 @@
             display: none !important;
         }
 
-        /* MASTIL + BANDERA */
+        /* MASTIL + BANDERA (canvas pixelado) */
         .mastil-area {
             width: 100%;
             display: flex;
@@ -75,13 +77,14 @@
             margin: 20px auto;
             text-align: center;
             transition: 0.03s linear;
+            touch-action: manipulation;
         }
         .btn-empezar:active {
             transform: translate(4px, 4px);
             box-shadow: 2px 2px 0 #020502;
         }
 
-        /* LOADING COMPUTADORA (pixel puro) */
+        /* LOADING COMPUTADORA (estilo código repetitivo) */
         .loading-full {
             background: #010a01;
             min-height: 100vh;
@@ -99,6 +102,7 @@
             white-space: pre-wrap;
             word-break: break-word;
             flex: 1;
+            overflow-y: auto;
         }
         .terminal-pixel p {
             margin: 12px 0;
@@ -106,7 +110,7 @@
             padding-left: 12px;
         }
 
-        /* MENÚ PRINCIPAL 8-BIT */
+        /* MENÚ PRINCIPAL (SEGA / 8-BIT) */
         .menu-full {
             background: #0b0f0b;
             min-height: 100vh;
@@ -148,6 +152,7 @@
             cursor: pointer;
             text-align: center;
             transition: 0.03s linear;
+            touch-action: manipulation;
         }
         .pixel-btn:active {
             transform: translate(4px, 4px);
@@ -161,7 +166,7 @@
             text-align: center;
         }
 
-        /* MODAL pixel sin marcos externos */
+        /* MODAL 8-BIT */
         .pixel-modal {
             position: fixed;
             top: 0;
@@ -219,6 +224,7 @@
             color: #ffdf93;
             box-shadow: 4px 4px 0 #000;
             cursor: pointer;
+            touch-action: manipulation;
         }
         .modal-btn:active {
             transform: translate(2px,2px);
@@ -236,7 +242,7 @@
     </style>
 </head>
 <body>
-    <!-- PANTALLA 1: MASTIL + BANDERA (PIXEL ART) -->
+    <!-- PANTALLA 1: MASTIL + BANDERA PIXEL ART -->
     <div id="splashScreen" class="screen">
         <div class="mastil-area">
             <canvas id="mastilCanvas" width="440" height="340" style="width:100%; max-width:440px; aspect-ratio:440/340"></canvas>
@@ -275,7 +281,7 @@
 
     <script>
         (function() {
-            // ---------- CANVAS PIXEL PERFECTO: mástil y bandera estilo Mario ----------
+            // ---------- CANVAS PIXEL: mástil y bandera (estilo Mario) ----------
             const canvas = document.getElementById('mastilCanvas');
             if (canvas) {
                 const ctx = canvas.getContext('2d');
@@ -305,7 +311,7 @@
                     ctx.fillRect(mastilX+6, y, 6, 5);
                     ctx.fillRect(mastilX+16, y+6, 6, 5);
                 }
-                // bola superior (píxel)
+                // bola superior
                 ctx.fillStyle = '#e5b83c';
                 ctx.fillRect(mastilX-8, 28, 44, 20);
                 ctx.fillStyle = '#b47a22';
@@ -320,20 +326,20 @@
                 ctx.fillRect(flagX, flagY, ancho, alto);
                 ctx.fillStyle = '#1f1a10';
                 ctx.strokeRect(flagX, flagY, ancho, alto);
-                // efecto de flameado (píxeles)
+                // flameado
                 for (let t = 0; t < 6; t++) {
                     ctx.fillStyle = '#fffbe6';
                     ctx.fillRect(flagX + t*30, flagY+alto-8 + (t%2)*5, 22, 7);
                     ctx.fillStyle = '#1f1a10';
                     ctx.fillRect(flagX + t*30, flagY+alto-8 + (t%2)*5, 22, 2);
                 }
-                // TEXTO 8-BIT DENTRO DEL CANVAS (usando la misma fuente pixel)
+                // texto 8-bit dentro del canvas
                 ctx.font = 'bold 11px "Press Start 2P", "Courier New", monospace';
                 ctx.fillStyle = '#000000';
                 ctx.fillText("AQUI SE ESTÁ", flagX+18, flagY+36);
                 ctx.fillText("LEYENDO", flagX+48, flagY+62);
                 ctx.fillText("POESÍA", flagX+52, flagY+88);
-                // detalles estrella
+                // detalles
                 ctx.fillStyle = '#ffd966';
                 ctx.fillRect(flagX+ancho-24, flagY+14, 6,6);
                 ctx.fillRect(flagX+ancho-40, flagY+28, 6,6);
@@ -418,12 +424,10 @@
             });
 
             // ---------- BOTONES DEL MENÚ ----------
-            // Ubicación: Google Maps
             document.getElementById('btnUbicacion').addEventListener('click', () => {
                 window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
             });
 
-            // Entradas: abre directo a Mercado Pago transferencias y copia alias
             document.getElementById('btnEntradas').addEventListener('click', () => {
                 const alias = "ellorenzopa.banda";
                 const monto = "4000";
@@ -453,7 +457,6 @@
                 modal.classList.add('active');
             });
 
-            // Pista: mensaje críptico
             document.getElementById('btnPista').addEventListener('click', () => {
                 modalTitle.innerText = "🔮 PISTA SECRETA";
                 modalMessage.innerText = '"seremos el centro del temblor"';
