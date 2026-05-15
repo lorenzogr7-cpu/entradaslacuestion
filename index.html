@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LA CUESTIÓN · 8-BIT PASTO</title>
-    <!-- FUENTE 8-BIT OBLIGATORIA -->
+    <title>LA CUESTIÓN · 8-BIT PASTO FLAMEANTE</title>
+    <!-- FUENTE 8-BIT -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * {
@@ -85,7 +85,7 @@
             box-shadow: 2px 2px 0 #020502;
         }
 
-        /* LOADING COMPUTADORA (código) */
+        /* LOADING COMPUTADORA (código repetitivo) */
         .loading-full {
             background: #010a01;
             min-height: 100vh;
@@ -244,7 +244,7 @@
     </style>
 </head>
 <body>
-    <!-- PANTALLA 1: MASTIL + BANDERA (fondo pasto verde 8-bit) -->
+    <!-- PANTALLA 1: MASTIL + BANDERA (fondo pasto verde + bandera flameante 8-bit) -->
     <div id="splashScreen" class="screen mastil-section">
         <div class="mastil-area">
             <canvas id="mastilCanvas" width="440" height="340" style="width:100%; max-width:440px; aspect-ratio:440/340"></canvas>
@@ -283,33 +283,33 @@
 
     <script>
         (function() {
-            // ---------- CANVAS: mástil y bandera con fondo pasto (pixel art) ----------
+            // ---------- CANVAS PIXEL CON BANDERA FLAMEANTE 8-BIT ----------
             const canvas = document.getElementById('mastilCanvas');
-            if (canvas) {
+            let animInterval = null;
+            
+            function drawMastilWithFlag(frame) {
+                if (!canvas) return;
                 const ctx = canvas.getContext('2d');
                 canvas.width = 440;
                 canvas.height = 340;
                 ctx.imageSmoothingEnabled = false;
-                drawMastilPixel(ctx);
-            }
-
-            function drawMastilPixel(ctx) {
+                
                 const w = 440, h = 340;
-                // FONDO PASTO 8-BIT (verde césped pixelado)
+                // FONDO PASTO 8-BIT (césped pixelado)
                 for (let i = 0; i < w/8; i++) {
                     for (let j = 0; j < h/8; j++) {
                         ctx.fillStyle = (i + j) % 2 === 0 ? '#3c9e3c' : '#2a7a2a';
                         ctx.fillRect(i*8, j*8, 8, 8);
                     }
                 }
-                // detalles de briznas de pasto (píxeles)
+                // briznas de pasto
                 ctx.fillStyle = '#5fd65f';
                 for (let p = 0; p < 30; p++) {
                     ctx.fillRect(10 + p*13, h-12 + (p%3)*3, 2, 5);
                     ctx.fillRect(25 + p*9, h-18 + (p%2)*4, 2, 4);
                 }
                 
-                // mástil (ladrillo pixel)
+                // mástil (ladrillo)
                 const mastilX = 160;
                 const mastilW = 28;
                 const mastilH = 210;
@@ -326,7 +326,7 @@
                 ctx.fillStyle = '#b47a22';
                 ctx.fillRect(mastilX-4, 24, 36, 8);
                 
-                // BANDERA BLANCA ONDEADA (estilo Mario)
+                // BANDERA BLANCA ONDEADA (flameo 8-bit según frame)
                 const flagX = mastilX + mastilW;
                 const flagY = 40;
                 const ancho = 200;
@@ -335,13 +335,20 @@
                 ctx.fillRect(flagX, flagY, ancho, alto);
                 ctx.fillStyle = '#1f1a10';
                 ctx.strokeRect(flagX, flagY, ancho, alto);
-                // flameado
-                for (let t = 0; t < 6; t++) {
+                
+                // FLAMEO PIXELADO: el borde inferior se mueve con forma sinusoidal (8-bit)
+                const t = frame % 12; // ciclo de 12 frames
+                for (let segmento = 0; segmento < 6; segmento++) {
+                    const offsetX = flagX + segmento * 30;
+                    // altura del flameo: varía entre 5 y 12 píxeles
+                    const wave = Math.sin(segmento * 1.2 + frame * 0.5) * 3;
+                    const altoFlame = 8 + Math.floor(wave);
                     ctx.fillStyle = '#fffbe6';
-                    ctx.fillRect(flagX + t*30, flagY+alto-8 + (t%2)*5, 22, 7);
+                    ctx.fillRect(offsetX, flagY+alto - altoFlame + (segmento%2)*2, 26, altoFlame);
                     ctx.fillStyle = '#1f1a10';
-                    ctx.fillRect(flagX + t*30, flagY+alto-8 + (t%2)*5, 22, 2);
+                    ctx.fillRect(offsetX, flagY+alto - altoFlame + (segmento%2)*2, 26, 2);
                 }
+                
                 // texto 8-bit dentro del canvas
                 ctx.font = 'bold 11px "Press Start 2P", "Courier New", monospace';
                 ctx.fillStyle = '#000000';
@@ -353,7 +360,22 @@
                 ctx.fillRect(flagX+ancho-24, flagY+14, 6,6);
                 ctx.fillRect(flagX+ancho-40, flagY+28, 6,6);
             }
-
+            
+            let frameCount = 0;
+            function startFlagAnimation() {
+                if (animInterval) clearInterval(animInterval);
+                animInterval = setInterval(() => {
+                    drawMastilWithFlag(frameCount++);
+                }, 150); // 150ms para animación pixelada
+            }
+            
+            // Iniciar animación solo si el canvas existe
+            if (canvas) {
+                startFlagAnimation();
+            }
+            
+            // Detener animación si se oculta la pantalla (opcional pero no necesario)
+            
             // ---------- CONTROL DE PANTALLAS ----------
             const splash = document.getElementById('splashScreen');
             const loadingScreen = document.getElementById('loadingScreen');
@@ -365,20 +387,20 @@
             const modalMessage = document.getElementById('modalMessage');
             const modalExtra = document.getElementById('modalExtraButtons');
             const closeModalBtn = document.getElementById('closeModalBtn');
-
+            
             function closeModal() {
                 modal.classList.remove('active');
                 modalExtra.innerHTML = '';
             }
             closeModalBtn.addEventListener('click', closeModal);
             modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
-
+            
             let timers = [];
             function limpiarTimers() {
                 timers.forEach(t => clearInterval(t));
                 timers = [];
             }
-
+            
             function iniciarCargaComputadora() {
                 splash.classList.add('hidden');
                 loadingScreen.classList.remove('hidden');
@@ -419,25 +441,24 @@
                 const safety = setTimeout(() => finalizarCarga(), 5500);
                 timers.push(safety);
             }
-
+            
             function finalizarCarga() {
                 limpiarTimers();
                 loadingScreen.classList.add('hidden');
                 mainMenu.classList.remove('hidden');
                 terminalDiv.innerHTML = '';
             }
-
+            
             empezarBtn.addEventListener('click', () => {
                 if (!splash.classList.contains('hidden')) iniciarCargaComputadora();
             });
-
+            
             // ---------- BOTONES DEL MENÚ ----------
-            // Ubicación: Google Maps
             document.getElementById('btnUbicacion').addEventListener('click', () => {
                 window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
             });
-
-            // ENTRADAS: muestra modal con opciones (NO abre directo)
+            
+            // ENTRADAS: modal con opciones, abre Mercado Pago en nueva pestaña SIN reemplazar nuestro sitio
             document.getElementById('btnEntradas').addEventListener('click', (e) => {
                 e.preventDefault();
                 const alias = "ellorenzopa.banda";
@@ -447,33 +468,13 @@
                 modalMessage.innerText = `Alias: ${alias}\nMonto: $${monto} ARS\n\nElegí una opción:`;
                 modalExtra.innerHTML = '';
                 
-                // Botón para abrir Mercado Pago (intenta app, si no, web)
+                // Botón para abrir Mercado Pago en nueva pestaña (sin afectar nuestra página)
                 const btnAbrirMP = document.createElement('button');
                 btnAbrirMP.innerText = "💰 ABRIR MERCADO PAGO";
                 btnAbrirMP.classList.add('modal-btn');
                 btnAbrirMP.addEventListener('click', () => {
-                    // Intentar abrir la app de Mercado Pago (esquema universal)
-                    const appUrl = "mercadopago://"; // deep link app
-                    const webUrl = "https://www.mercadopago.com.ar/transferencias";
-                    // Primero intentamos con la app, si no responde se va a web
-                    const start = Date.now();
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.src = appUrl;
-                    document.body.appendChild(iframe);
-                    // Fallback después de 800ms
-                    const timeout = setTimeout(() => {
-                        window.location.href = webUrl;
-                        document.body.removeChild(iframe);
-                    }, 800);
-                    // Si la página pierde foco (la app se abrió) cancelamos el timeout
-                    window.addEventListener('blur', () => {
-                        clearTimeout(timeout);
-                        document.body.removeChild(iframe);
-                    }, { once: true });
-                    setTimeout(() => {
-                        document.body.removeChild(iframe);
-                    }, 1000);
+                    // Abre en nueva pestaña/ventana - no reemplaza el menú actual
+                    window.open('https://www.mercadopago.com.ar/transferencias', '_blank');
                     closeModal();
                 });
                 
@@ -497,7 +498,7 @@
                 modalExtra.appendChild(btnCopiarAlias);
                 modal.classList.add('active');
             });
-
+            
             // Pista
             document.getElementById('btnPista').addEventListener('click', () => {
                 modalTitle.innerText = "🔮 PISTA SECRETA";
@@ -510,7 +511,7 @@
                 modalExtra.appendChild(okBtn);
                 modal.classList.add('active');
             });
-
+            
             function mostrarToast8bit(mensaje) {
                 const oldToast = document.querySelector('.pixel-toast');
                 if(oldToast) oldToast.remove();
