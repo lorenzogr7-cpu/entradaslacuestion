@@ -207,6 +207,7 @@
             font-family: 'Press Start 2P', monospace;
             font-size: 0.65rem;
             border-left: 4px solid #fea82f;
+            word-break: break-word;
         }
         .modal-buttons {
             display: flex;
@@ -428,16 +429,35 @@
                 window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
             });
 
-            document.getElementById('btnEntradas').addEventListener('click', () => {
+            // ENTRADAS: CORREGIDO - abrir Mercado Pago y copiar alias sin errores
+            document.getElementById('btnEntradas').addEventListener('click', (e) => {
+                e.preventDefault();
                 const alias = "ellorenzopa.banda";
                 const monto = "4000";
+                
+                // Abrir Mercado Pago en nueva pestaña (evita bloqueos)
                 window.open('https://www.mercadopago.com.ar/transferencias', '_blank');
-                navigator.clipboard.writeText(alias).then(() => {
-                    mostrarToast8bit(`✓ Alias "${alias}" copiado. Transferí ARS $${monto}.`);
-                }).catch(() => mostrarToast8bit(`Alias: ${alias} | $${monto}`));
+                
+                // Copiar alias al portapapeles con manejo de errores y feedback visual
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(alias).then(() => {
+                        mostrarToast8bit(`✓ Alias "${alias}" copiado. Transferí ARS $${monto}.`);
+                    }).catch(() => {
+                        // fallback: mostrar alerta pixel
+                        alert(`Alias: ${alias} - Monto: $${monto}\nCopialo manualmente.`);
+                        mostrarToast8bit(`Alias: ${alias} | $${monto}`);
+                    });
+                } else {
+                    // para navegadores sin clipboard API
+                    alert(`Alias: ${alias} - Monto: $${monto}\nCopialo manualmente.`);
+                    mostrarToast8bit(`Alias: ${alias} | $${monto}`);
+                }
+                
+                // Mostrar modal con opciones adicionales
                 modalTitle.innerText = "🎟️ ENTRADA $4000";
-                modalMessage.innerText = `Alias: ${alias}\nMonto: $${monto} ARS\n\nSe abrió Mercado Pago en otra pestaña. Copiá el alias y transferí.`;
+                modalMessage.innerText = `Alias: ${alias}\nMonto: $${monto} ARS\n\nSe abrió Mercado Pago. Usá el alias para transferir.`;
                 modalExtra.innerHTML = '';
+                
                 const btnIrMP = document.createElement('button');
                 btnIrMP.innerText = "💰 IR A TRANSFERIR";
                 btnIrMP.classList.add('modal-btn');
@@ -445,13 +465,22 @@
                     window.open('https://www.mercadopago.com.ar/transferencias', '_blank');
                     closeModal();
                 });
+                
                 const btnCopiarAlias = document.createElement('button');
                 btnCopiarAlias.innerText = "📋 COPIAR ALIAS";
                 btnCopiarAlias.classList.add('modal-btn');
                 btnCopiarAlias.addEventListener('click', () => {
-                    navigator.clipboard.writeText(alias);
-                    mostrarToast8bit("Alias copiado: " + alias);
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(alias).then(() => {
+                            mostrarToast8bit("Alias copiado: " + alias);
+                        }).catch(() => {
+                            alert("Copiado manual: " + alias);
+                        });
+                    } else {
+                        alert("Copiado manual: " + alias);
+                    }
                 });
+                
                 modalExtra.appendChild(btnIrMP);
                 modalExtra.appendChild(btnCopiarAlias);
                 modal.classList.add('active');
@@ -470,7 +499,12 @@
             });
 
             function mostrarToast8bit(mensaje) {
+                // Eliminar toast existente si hay
+                const oldToast = document.querySelector('.pixel-toast');
+                if(oldToast) oldToast.remove();
+                
                 const toast = document.createElement('div');
+                toast.className = 'pixel-toast';
                 toast.innerText = mensaje;
                 toast.style.position = 'fixed';
                 toast.style.bottom = '28px';
@@ -486,11 +520,14 @@
                 toast.style.zIndex = '10000';
                 toast.style.textAlign = 'center';
                 toast.style.whiteSpace = 'nowrap';
+                toast.style.maxWidth = '90%';
+                toast.style.whiteSpace = 'normal';
+                toast.style.wordBreak = 'break-word';
                 document.body.appendChild(toast);
                 setTimeout(() => {
                     toast.style.opacity = '0';
                     setTimeout(() => toast.remove(), 400);
-                }, 3000);
+                }, 3500);
             }
         })();
     </script>
