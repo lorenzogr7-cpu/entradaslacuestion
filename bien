@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>LA CUESTIÓN · PIXEL ART 8-BIT</title>
+    <!-- FUENTE PIXEL PERFECTA -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: pixelated;
+        }
+
+        body {
+            background: #0a0f0a;
+            min-height: 100vh;
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: hidden;
+        }
+
+        /* Contenedores pantalla completa, SIN marcos ni bordes extra */
+        .screen {
+            width: 100%;
+            min-height: 100vh;
+            background: #0c1a0c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 16px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* MASTIL + BANDERA */
+        .mastil-area {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0f2a1f;
+            flex: 1;
+        }
+        canvas#mastilCanvas {
+            display: block;
+            width: 100%;
+            max-width: 460px;
+            height: auto;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            background: #0f2a1f;
+            margin: 20px auto;
+        }
+        .btn-empezar {
+            background: #1f2a1a;
+            border: none;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1rem;
+            padding: 18px 12px;
+            color: #f7e05e;
+            text-shadow: 3px 3px 0 #3a2a0a;
+            box-shadow: 6px 6px 0 #020502;
+            cursor: pointer;
+            width: 80%;
+            max-width: 280px;
+            margin: 20px auto;
+            text-align: center;
+            transition: 0.03s linear;
+        }
+        .btn-empezar:active {
+            transform: translate(4px, 4px);
+            box-shadow: 2px 2px 0 #020502;
+        }
+
+        /* LOADING COMPUTADORA (pixel puro) */
+        .loading-full {
+            background: #010a01;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+        }
+        .terminal-pixel {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.6rem;
+            line-height: 1.7;
+            color: #2eff6e;
+            background: #001200;
+            padding: 24px 12px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            flex: 1;
+        }
+        .terminal-pixel p {
+            margin: 12px 0;
+            border-left: 3px solid #5eff8a;
+            padding-left: 12px;
+        }
+
+        /* MENÚ PRINCIPAL 8-BIT */
+        .menu-full {
+            background: #0b0f0b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 20px;
+        }
+        .game-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1.8rem;
+            background: #000000;
+            color: #fdcc4a;
+            padding: 16px 12px;
+            text-align: center;
+            letter-spacing: 2px;
+            width: 100%;
+            margin-bottom: 48px;
+            text-shadow: 5px 5px 0 #5a2e0a;
+            border: none;
+        }
+        .menu-buttons {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+            max-width: 360px;
+        }
+        .pixel-btn {
+            background: #1e1e18;
+            border: none;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.9rem;
+            padding: 18px 8px;
+            color: #ffeaaf;
+            text-shadow: 2px 2px 0 #33200a;
+            box-shadow: 6px 6px 0 #020302;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.03s linear;
+        }
+        .pixel-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 2px 2px 0 #020302;
+        }
+        footer {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.45rem;
+            color: #8dae6a;
+            margin-top: 48px;
+            text-align: center;
+        }
+
+        /* MODAL pixel sin marcos externos */
+        .pixel-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000dd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.1s;
+            z-index: 2000;
+        }
+        .pixel-modal.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-retro {
+            background: #131008;
+            padding: 28px 20px;
+            width: 86%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 10px 10px 0 #000000;
+        }
+        .modal-retro h3 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.85rem;
+            color: #fbb13c;
+            margin-bottom: 20px;
+        }
+        .modal-retro p {
+            background: #242018;
+            padding: 16px;
+            color: #f7e7b4;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.65rem;
+            border-left: 4px solid #fea82f;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .modal-btn {
+            background: #2e2a1f;
+            border: none;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.6rem;
+            padding: 10px 16px;
+            color: #ffdf93;
+            box-shadow: 4px 4px 0 #000;
+            cursor: pointer;
+        }
+        .modal-btn:active {
+            transform: translate(2px,2px);
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        @media (max-width: 560px) {
+            .game-title { font-size: 1.2rem; letter-spacing: 1px; }
+            .pixel-btn { font-size: 0.65rem; padding: 14px 6px; }
+            .btn-empezar { font-size: 0.8rem; }
+            .terminal-pixel { font-size: 0.45rem; }
+            .modal-retro h3 { font-size: 0.7rem; }
+            .modal-retro p { font-size: 0.55rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- PANTALLA 1: MASTIL + BANDERA (PIXEL ART) -->
+    <div id="splashScreen" class="screen">
+        <div class="mastil-area">
+            <canvas id="mastilCanvas" width="440" height="340" style="width:100%; max-width:440px; aspect-ratio:440/340"></canvas>
+            <button id="btnEmpezar" class="btn-empezar">► EMPEZAR</button>
+        </div>
+        <footer>✦ 8-BIT MANIA ✦</footer>
+    </div>
+
+    <!-- PANTALLA LOADING (COMPUTADORA) -->
+    <div id="loadingScreen" class="loading-full hidden">
+        <div id="terminalText" class="terminal-pixel"></div>
+    </div>
+
+    <!-- MENÚ PRINCIPAL -->
+    <div id="mainMenu" class="menu-full hidden">
+        <div class="game-title">LA CUESTIÓN</div>
+        <div class="menu-buttons">
+            <button id="btnUbicacion" class="pixel-btn">📍 UBICACIÓN</button>
+            <button id="btnEntradas" class="pixel-btn">🎟️ ENTRADAS</button>
+            <button id="btnPista" class="pixel-btn">🔍 PISTA</button>
+        </div>
+        <footer>✦ SEGA 16-BIT PIXEL CORE ✦</footer>
+    </div>
+
+    <!-- MODAL INFORMATIVO -->
+    <div id="pixelModal" class="pixel-modal">
+        <div class="modal-retro">
+            <h3 id="modalTitle">---</h3>
+            <p id="modalMessage"></p>
+            <div id="modalExtraButtons" class="modal-buttons"></div>
+            <div class="modal-buttons">
+                <button id="closeModalBtn" class="modal-btn">✖ CERRAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ---------- CANVAS PIXEL PERFECTO: mástil y bandera estilo Mario ----------
+            const canvas = document.getElementById('mastilCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                canvas.width = 440;
+                canvas.height = 340;
+                ctx.imageSmoothingEnabled = false;
+                drawPixelArt(ctx);
+            }
+
+            function drawPixelArt(ctx) {
+                const w = 440, h = 340;
+                // fondo a cuadros pixel cielo
+                for (let i = 0; i < w/8; i++) {
+                    for (let j = 0; j < h/8; j++) {
+                        ctx.fillStyle = (i + j) % 2 === 0 ? '#226633' : '#1a5529';
+                        ctx.fillRect(i*8, j*8, 8, 8);
+                    }
+                }
+                // mástil (ladrillo pixel)
+                const mastilX = 160;
+                const mastilW = 28;
+                const mastilH = 210;
+                ctx.fillStyle = '#8b5a2b';
+                ctx.fillRect(mastilX, 48, mastilW, mastilH);
+                ctx.fillStyle = '#c2823a';
+                for (let y = 48; y < 48+mastilH; y+=12) {
+                    ctx.fillRect(mastilX+6, y, 6, 5);
+                    ctx.fillRect(mastilX+16, y+6, 6, 5);
+                }
+                // bola superior (píxel)
+                ctx.fillStyle = '#e5b83c';
+                ctx.fillRect(mastilX-8, 28, 44, 20);
+                ctx.fillStyle = '#b47a22';
+                ctx.fillRect(mastilX-4, 24, 36, 8);
+                
+                // BANDERA BLANCA ONDEADA (estilo Mario)
+                const flagX = mastilX + mastilW;
+                const flagY = 40;
+                const ancho = 200;
+                const alto = 94;
+                ctx.fillStyle = '#fffbe6';
+                ctx.fillRect(flagX, flagY, ancho, alto);
+                ctx.fillStyle = '#1f1a10';
+                ctx.strokeRect(flagX, flagY, ancho, alto);
+                // efecto de flameado (píxeles)
+                for (let t = 0; t < 6; t++) {
+                    ctx.fillStyle = '#fffbe6';
+                    ctx.fillRect(flagX + t*30, flagY+alto-8 + (t%2)*5, 22, 7);
+                    ctx.fillStyle = '#1f1a10';
+                    ctx.fillRect(flagX + t*30, flagY+alto-8 + (t%2)*5, 22, 2);
+                }
+                // TEXTO 8-BIT DENTRO DEL CANVAS (usando la misma fuente pixel)
+                ctx.font = 'bold 11px "Press Start 2P", "Courier New", monospace';
+                ctx.fillStyle = '#000000';
+                ctx.fillText("AQUI SE ESTÁ", flagX+18, flagY+36);
+                ctx.fillText("LEYENDO", flagX+48, flagY+62);
+                ctx.fillText("POESÍA", flagX+52, flagY+88);
+                // detalles estrella
+                ctx.fillStyle = '#ffd966';
+                ctx.fillRect(flagX+ancho-24, flagY+14, 6,6);
+                ctx.fillRect(flagX+ancho-40, flagY+28, 6,6);
+            }
+
+            // ---------- CONTROL DE PANTALLAS ----------
+            const splash = document.getElementById('splashScreen');
+            const loadingScreen = document.getElementById('loadingScreen');
+            const mainMenu = document.getElementById('mainMenu');
+            const empezarBtn = document.getElementById('btnEmpezar');
+            const terminalDiv = document.getElementById('terminalText');
+            const modal = document.getElementById('pixelModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalExtra = document.getElementById('modalExtraButtons');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+
+            function closeModal() {
+                modal.classList.remove('active');
+                modalExtra.innerHTML = '';
+            }
+            closeModalBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+
+            let timers = [];
+            function limpiarTimers() {
+                timers.forEach(t => clearInterval(t));
+                timers = [];
+            }
+
+            function iniciarCargaComputadora() {
+                splash.classList.add('hidden');
+                loadingScreen.classList.remove('hidden');
+                mainMenu.classList.add('hidden');
+                terminalDiv.innerHTML = '';
+                const fraseBase = "> la cuestión está sucediendo en este momento";
+                const codigos = [
+                    "[SYS] la cuestión está sucediendo en este momento",
+                    "[KERNEL] la cuestión está sucediendo en este momento",
+                    "[PROCESO] la cuestión está sucediendo en este momento",
+                    "[MEM] la cuestión está sucediendo en este momento",
+                    "[POESÍA] la cuestión está sucediendo en este momento",
+                    "** la cuestión está sucediendo en este momento **"
+                ];
+                let contador = 0;
+                function agregarLinea() {
+                    if (!loadingScreen || loadingScreen.classList.contains('hidden')) return;
+                    const p = document.createElement('p');
+                    let texto = (contador % 2 === 0) ? codigos[contador % codigos.length] : fraseBase + " [" + Math.floor(Math.random() * 0xFFFF).toString(16) + "]";
+                    p.textContent = texto;
+                    terminalDiv.appendChild(p);
+                    terminalDiv.scrollTop = terminalDiv.scrollHeight;
+                    contador++;
+                    if (terminalDiv.children.length > 160) {
+                        for(let i=0; i<30; i++) if(terminalDiv.firstChild) terminalDiv.removeChild(terminalDiv.firstChild);
+                    }
+                }
+                const rapid = setInterval(agregarLinea, 30);
+                timers.push(rapid);
+                setTimeout(() => {
+                    clearInterval(rapid);
+                    const slow = setInterval(agregarLinea, 100);
+                    timers.push(slow);
+                    setTimeout(() => {
+                        clearInterval(slow);
+                        finalizarCarga();
+                    }, 2800);
+                }, 2100);
+                const safety = setTimeout(() => finalizarCarga(), 5500);
+                timers.push(safety);
+            }
+
+            function finalizarCarga() {
+                limpiarTimers();
+                loadingScreen.classList.add('hidden');
+                mainMenu.classList.remove('hidden');
+                terminalDiv.innerHTML = '';
+            }
+
+            empezarBtn.addEventListener('click', () => {
+                if (!splash.classList.contains('hidden')) iniciarCargaComputadora();
+            });
+
+            // ---------- BOTONES DEL MENÚ ----------
+            // Ubicación: Google Maps
+            document.getElementById('btnUbicacion').addEventListener('click', () => {
+                window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
+            });
+
+            // Entradas: abre directo a Mercado Pago transferencias y copia alias
+            document.getElementById('btnEntradas').addEventListener('click', () => {
+                const alias = "ellorenzopa.banda";
+                const monto = "4000";
+                window.open('https://www.mercadopago.com.ar/transferencias', '_blank');
+                navigator.clipboard.writeText(alias).then(() => {
+                    mostrarToast8bit(`✓ Alias "${alias}" copiado. Transferí ARS $${monto}.`);
+                }).catch(() => mostrarToast8bit(`Alias: ${alias} | $${monto}`));
+                modalTitle.innerText = "🎟️ ENTRADA $4000";
+                modalMessage.innerText = `Alias: ${alias}\nMonto: $${monto} ARS\n\nSe abrió Mercado Pago en otra pestaña. Copiá el alias y transferí.`;
+                modalExtra.innerHTML = '';
+                const btnIrMP = document.createElement('button');
+                btnIrMP.innerText = "💰 IR A TRANSFERIR";
+                btnIrMP.classList.add('modal-btn');
+                btnIrMP.addEventListener('click', () => {
+                    window.open('https://www.mercadopago.com.ar/transferencias', '_blank');
+                    closeModal();
+                });
+                const btnCopiarAlias = document.createElement('button');
+                btnCopiarAlias.innerText = "📋 COPIAR ALIAS";
+                btnCopiarAlias.classList.add('modal-btn');
+                btnCopiarAlias.addEventListener('click', () => {
+                    navigator.clipboard.writeText(alias);
+                    mostrarToast8bit("Alias copiado: " + alias);
+                });
+                modalExtra.appendChild(btnIrMP);
+                modalExtra.appendChild(btnCopiarAlias);
+                modal.classList.add('active');
+            });
+
+            // Pista: mensaje críptico
+            document.getElementById('btnPista').addEventListener('click', () => {
+                modalTitle.innerText = "🔮 PISTA SECRETA";
+                modalMessage.innerText = '"seremos el centro del temblor"';
+                modalExtra.innerHTML = '';
+                const okBtn = document.createElement('button');
+                okBtn.innerText = "♨️ RESONAR";
+                okBtn.classList.add('modal-btn');
+                okBtn.addEventListener('click', closeModal);
+                modalExtra.appendChild(okBtn);
+                modal.classList.add('active');
+            });
+
+            function mostrarToast8bit(mensaje) {
+                const toast = document.createElement('div');
+                toast.innerText = mensaje;
+                toast.style.position = 'fixed';
+                toast.style.bottom = '28px';
+                toast.style.left = '50%';
+                toast.style.transform = 'translateX(-50%)';
+                toast.style.backgroundColor = '#000000';
+                toast.style.color = '#fbe86e';
+                toast.style.padding = '14px 18px';
+                toast.style.fontFamily = '"Press Start 2P", monospace';
+                toast.style.fontSize = '0.6rem';
+                toast.style.border = 'none';
+                toast.style.boxShadow = '6px 6px 0 #2a210e';
+                toast.style.zIndex = '10000';
+                toast.style.textAlign = 'center';
+                toast.style.whiteSpace = 'nowrap';
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 400);
+                }, 3000);
+            }
+        })();
+    </script>
+</body>
+</html>
