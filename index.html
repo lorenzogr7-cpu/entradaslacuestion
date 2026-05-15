@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LA CUESTIÓN · 8-BIT PIXEL ART</title>
+    <title>LA CUESTIÓN · 8-BIT PASTO</title>
     <!-- FUENTE 8-BIT OBLIGATORIA -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        /* RESET Y ESTILOS PIXEL PERFECTOS */
         * {
             margin: 0;
             padding: 0;
@@ -26,11 +25,10 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Pantallas a full, sin bordes */
+        /* Pantallas a full */
         .screen {
             width: 100%;
             min-height: 100vh;
-            background: #0c1a0c;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -42,14 +40,18 @@
             display: none !important;
         }
 
-        /* MASTIL + BANDERA (canvas pixelado) */
+        /* PANTALLA INICIAL: FONDO PASTO VERDE 8-BIT */
+        .mastil-section {
+            background: #1a3a1a;
+            background-image: repeating-linear-gradient(0deg, #2d6a2d 0px, #2d6a2d 8px, #1f4f1f 8px, #1f4f1f 16px);
+        }
         .mastil-area {
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #0f2a1f;
+            background: transparent;
             flex: 1;
         }
         canvas#mastilCanvas {
@@ -59,8 +61,8 @@
             height: auto;
             image-rendering: crisp-edges;
             image-rendering: pixelated;
-            background: #0f2a1f;
             margin: 20px auto;
+            background: transparent;
         }
         .btn-empezar {
             background: #1f2a1a;
@@ -77,14 +79,13 @@
             margin: 20px auto;
             text-align: center;
             transition: 0.03s linear;
-            touch-action: manipulation;
         }
         .btn-empezar:active {
             transform: translate(4px, 4px);
             box-shadow: 2px 2px 0 #020502;
         }
 
-        /* LOADING COMPUTADORA (estilo código repetitivo) */
+        /* LOADING COMPUTADORA (código) */
         .loading-full {
             background: #010a01;
             min-height: 100vh;
@@ -110,9 +111,10 @@
             padding-left: 12px;
         }
 
-        /* MENÚ PRINCIPAL (SEGA / 8-BIT) */
+        /* MENÚ PRINCIPAL: FONDO PASTO VIOLETA Y FLÚOR */
         .menu-full {
-            background: #0b0f0b;
+            background: #2a0f2a;
+            background-image: repeating-linear-gradient(45deg, #b438b4 0px, #b438b4 12px, #3eff3e 12px, #3eff3e 24px);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -152,7 +154,6 @@
             cursor: pointer;
             text-align: center;
             transition: 0.03s linear;
-            touch-action: manipulation;
         }
         .pixel-btn:active {
             transform: translate(4px, 4px);
@@ -161,7 +162,8 @@
         footer {
             font-family: 'Press Start 2P', monospace;
             font-size: 0.45rem;
-            color: #8dae6a;
+            color: #ffffff;
+            text-shadow: 1px 1px 0 #000;
             margin-top: 48px;
             text-align: center;
         }
@@ -225,7 +227,6 @@
             color: #ffdf93;
             box-shadow: 4px 4px 0 #000;
             cursor: pointer;
-            touch-action: manipulation;
         }
         .modal-btn:active {
             transform: translate(2px,2px);
@@ -243,13 +244,13 @@
     </style>
 </head>
 <body>
-    <!-- PANTALLA 1: MASTIL + BANDERA PIXEL ART -->
-    <div id="splashScreen" class="screen">
+    <!-- PANTALLA 1: MASTIL + BANDERA (fondo pasto verde 8-bit) -->
+    <div id="splashScreen" class="screen mastil-section">
         <div class="mastil-area">
             <canvas id="mastilCanvas" width="440" height="340" style="width:100%; max-width:440px; aspect-ratio:440/340"></canvas>
             <button id="btnEmpezar" class="btn-empezar">► EMPEZAR</button>
         </div>
-        <footer>✦ 8-BIT MANIA ✦</footer>
+        <footer>✦ PASTO 8-BIT ✦</footer>
     </div>
 
     <!-- PANTALLA LOADING (COMPUTADORA) -->
@@ -257,7 +258,7 @@
         <div id="terminalText" class="terminal-pixel"></div>
     </div>
 
-    <!-- MENÚ PRINCIPAL -->
+    <!-- MENÚ PRINCIPAL (fondo pasto violeta y flúor) -->
     <div id="mainMenu" class="menu-full hidden">
         <div class="game-title">LA CUESTIÓN</div>
         <div class="menu-buttons">
@@ -265,7 +266,7 @@
             <button id="btnEntradas" class="pixel-btn">🎟️ ENTRADAS</button>
             <button id="btnPista" class="pixel-btn">🔍 PISTA</button>
         </div>
-        <footer>✦ SEGA 16-BIT PIXEL CORE ✦</footer>
+        <footer>✦ PASTO VIOLETA & FLÚOR ✦</footer>
     </div>
 
     <!-- MODAL INFORMATIVO -->
@@ -282,25 +283,32 @@
 
     <script>
         (function() {
-            // ---------- CANVAS PIXEL: mástil y bandera (estilo Mario) ----------
+            // ---------- CANVAS: mástil y bandera con fondo pasto (pixel art) ----------
             const canvas = document.getElementById('mastilCanvas');
             if (canvas) {
                 const ctx = canvas.getContext('2d');
                 canvas.width = 440;
                 canvas.height = 340;
                 ctx.imageSmoothingEnabled = false;
-                drawPixelArt(ctx);
+                drawMastilPixel(ctx);
             }
 
-            function drawPixelArt(ctx) {
+            function drawMastilPixel(ctx) {
                 const w = 440, h = 340;
-                // fondo a cuadros pixel cielo
+                // FONDO PASTO 8-BIT (verde césped pixelado)
                 for (let i = 0; i < w/8; i++) {
                     for (let j = 0; j < h/8; j++) {
-                        ctx.fillStyle = (i + j) % 2 === 0 ? '#226633' : '#1a5529';
+                        ctx.fillStyle = (i + j) % 2 === 0 ? '#3c9e3c' : '#2a7a2a';
                         ctx.fillRect(i*8, j*8, 8, 8);
                     }
                 }
+                // detalles de briznas de pasto (píxeles)
+                ctx.fillStyle = '#5fd65f';
+                for (let p = 0; p < 30; p++) {
+                    ctx.fillRect(10 + p*13, h-12 + (p%3)*3, 2, 5);
+                    ctx.fillRect(25 + p*9, h-18 + (p%2)*4, 2, 4);
+                }
+                
                 // mástil (ladrillo pixel)
                 const mastilX = 160;
                 const mastilW = 28;
@@ -340,7 +348,7 @@
                 ctx.fillText("AQUI SE ESTÁ", flagX+18, flagY+36);
                 ctx.fillText("LEYENDO", flagX+48, flagY+62);
                 ctx.fillText("POESÍA", flagX+52, flagY+88);
-                // detalles
+                // detalles estrella
                 ctx.fillStyle = '#ffd966';
                 ctx.fillRect(flagX+ancho-24, flagY+14, 6,6);
                 ctx.fillRect(flagX+ancho-40, flagY+28, 6,6);
@@ -382,8 +390,7 @@
                     "[KERNEL] la cuestión está sucediendo en este momento",
                     "[PROCESO] la cuestión está sucediendo en este momento",
                     "[MEM] la cuestión está sucediendo en este momento",
-                    "[POESÍA] la cuestión está sucediendo en este momento",
-                    "** la cuestión está sucediendo en este momento **"
+                    "[POESÍA] la cuestión está sucediendo en este momento"
                 ];
                 let contador = 0;
                 function agregarLinea() {
@@ -425,47 +432,52 @@
             });
 
             // ---------- BOTONES DEL MENÚ ----------
+            // Ubicación: Google Maps
             document.getElementById('btnUbicacion').addEventListener('click', () => {
                 window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
             });
 
-            // ENTRADAS: CORREGIDO - abrir Mercado Pago y copiar alias sin errores
+            // ENTRADAS: muestra modal con opciones (NO abre directo)
             document.getElementById('btnEntradas').addEventListener('click', (e) => {
                 e.preventDefault();
                 const alias = "ellorenzopa.banda";
                 const monto = "4000";
                 
-                // Abrir Mercado Pago en nueva pestaña (evita bloqueos)
-                window.open('https://www.mercadopago.com.ar/transferencias', '_blank');
-                
-                // Copiar alias al portapapeles con manejo de errores y feedback visual
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(alias).then(() => {
-                        mostrarToast8bit(`✓ Alias "${alias}" copiado. Transferí ARS $${monto}.`);
-                    }).catch(() => {
-                        // fallback: mostrar alerta pixel
-                        alert(`Alias: ${alias} - Monto: $${monto}\nCopialo manualmente.`);
-                        mostrarToast8bit(`Alias: ${alias} | $${monto}`);
-                    });
-                } else {
-                    // para navegadores sin clipboard API
-                    alert(`Alias: ${alias} - Monto: $${monto}\nCopialo manualmente.`);
-                    mostrarToast8bit(`Alias: ${alias} | $${monto}`);
-                }
-                
-                // Mostrar modal con opciones adicionales
                 modalTitle.innerText = "🎟️ ENTRADA $4000";
-                modalMessage.innerText = `Alias: ${alias}\nMonto: $${monto} ARS\n\nSe abrió Mercado Pago. Usá el alias para transferir.`;
+                modalMessage.innerText = `Alias: ${alias}\nMonto: $${monto} ARS\n\nElegí una opción:`;
                 modalExtra.innerHTML = '';
                 
-                const btnIrMP = document.createElement('button');
-                btnIrMP.innerText = "💰 IR A TRANSFERIR";
-                btnIrMP.classList.add('modal-btn');
-                btnIrMP.addEventListener('click', () => {
-                    window.open('https://www.mercadopago.com.ar/transferencias', '_blank');
+                // Botón para abrir Mercado Pago (intenta app, si no, web)
+                const btnAbrirMP = document.createElement('button');
+                btnAbrirMP.innerText = "💰 ABRIR MERCADO PAGO";
+                btnAbrirMP.classList.add('modal-btn');
+                btnAbrirMP.addEventListener('click', () => {
+                    // Intentar abrir la app de Mercado Pago (esquema universal)
+                    const appUrl = "mercadopago://"; // deep link app
+                    const webUrl = "https://www.mercadopago.com.ar/transferencias";
+                    // Primero intentamos con la app, si no responde se va a web
+                    const start = Date.now();
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = appUrl;
+                    document.body.appendChild(iframe);
+                    // Fallback después de 800ms
+                    const timeout = setTimeout(() => {
+                        window.location.href = webUrl;
+                        document.body.removeChild(iframe);
+                    }, 800);
+                    // Si la página pierde foco (la app se abrió) cancelamos el timeout
+                    window.addEventListener('blur', () => {
+                        clearTimeout(timeout);
+                        document.body.removeChild(iframe);
+                    }, { once: true });
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                    }, 1000);
                     closeModal();
                 });
                 
+                // Botón copiar alias
                 const btnCopiarAlias = document.createElement('button');
                 btnCopiarAlias.innerText = "📋 COPIAR ALIAS";
                 btnCopiarAlias.classList.add('modal-btn');
@@ -481,11 +493,12 @@
                     }
                 });
                 
-                modalExtra.appendChild(btnIrMP);
+                modalExtra.appendChild(btnAbrirMP);
                 modalExtra.appendChild(btnCopiarAlias);
                 modal.classList.add('active');
             });
 
+            // Pista
             document.getElementById('btnPista').addEventListener('click', () => {
                 modalTitle.innerText = "🔮 PISTA SECRETA";
                 modalMessage.innerText = '"seremos el centro del temblor"';
@@ -499,10 +512,8 @@
             });
 
             function mostrarToast8bit(mensaje) {
-                // Eliminar toast existente si hay
                 const oldToast = document.querySelector('.pixel-toast');
                 if(oldToast) oldToast.remove();
-                
                 const toast = document.createElement('div');
                 toast.className = 'pixel-toast';
                 toast.innerText = mensaje;
@@ -519,10 +530,8 @@
                 toast.style.boxShadow = '6px 6px 0 #2a210e';
                 toast.style.zIndex = '10000';
                 toast.style.textAlign = 'center';
-                toast.style.whiteSpace = 'nowrap';
                 toast.style.maxWidth = '90%';
                 toast.style.whiteSpace = 'normal';
-                toast.style.wordBreak = 'break-word';
                 document.body.appendChild(toast);
                 setTimeout(() => {
                     toast.style.opacity = '0';
