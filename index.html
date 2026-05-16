@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LA CUESTIÓN · Windows 1.0</title>
+    <title>LA CUESTIÓN · Windows 1.0 Fullscreen</title>
     <style>
         * {
             margin: 0;
@@ -13,23 +13,28 @@
         }
 
         body {
-            background: #008080;  /* fondo tecla clásico de Windows 1.0 */
+            background: #008080;
             font-family: 'Courier New', 'MS Sans Serif', monospace;
             min-height: 100vh;
+            height: 100%;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 16px;
         }
 
-        /* Contenedor de la "aplicación" */
+        /* Contenedor que ocupa toda la pantalla */
         .win-app {
             width: 100%;
-            max-width: 540px;
-            margin: 0 auto;
+            height: 100vh;
+            max-width: none;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        /* Estilo de ventana Windows 1.0 */
+        /* Ventana que se adapta al 100% del ancho y alto disponible */
         .window {
             background: #c0c0c0;
             border: 2px solid;
@@ -38,19 +43,24 @@
             border-right-color: #808080;
             border-bottom-color: #808080;
             box-shadow: 2px 2px 0px #00000066;
-            margin-bottom: 20px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .title-bar {
             background: #000080;
             color: white;
-            padding: 4px 8px;
+            padding: 6px 10px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-family: 'Courier New', monospace;
+            flex-shrink: 0;
         }
         .title-bar span:first-child {
             letter-spacing: 1px;
@@ -58,7 +68,7 @@
         .title-bar span:last-child {
             background: #c0c0c0;
             color: black;
-            padding: 0 6px;
+            padding: 0 8px;
             margin-left: 8px;
             border: 1px solid #808080;
             font-size: 0.8rem;
@@ -69,6 +79,11 @@
             border: 1px solid #808080;
             margin: 2px;
             background: #c0c0c0;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         /* Botones estilo Win1.0 */
@@ -79,7 +94,7 @@
             border-left-color: #ffffff;
             border-right-color: #808080;
             border-bottom-color: #808080;
-            padding: 8px 16px;
+            padding: 12px 20px;
             font-family: 'Courier New', monospace;
             font-weight: bold;
             font-size: 1rem;
@@ -96,12 +111,11 @@
             transform: translate(1px, 1px);
         }
 
-        /* Canvas para la bandera */
         canvas {
             display: block;
             margin: 0 auto;
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
             height: auto;
             image-rendering: crisp-edges;
             image-rendering: pixelated;
@@ -114,27 +128,28 @@
             background: #000000;
             color: #00ff00;
             font-family: 'Courier New', monospace;
-            padding: 12px;
-            height: 300px;
+            padding: 16px;
+            height: 70vh;
             overflow-y: auto;
             white-space: pre-wrap;
             word-break: break-all;
             border: 1px solid #808080;
+            font-size: 0.9rem;
         }
         .terminal-win p {
-            margin: 6px 0;
+            margin: 8px 0;
             border-left: 2px solid #0f0;
-            padding-left: 8px;
+            padding-left: 10px;
         }
 
-        /* Modal estilo Windows */
+        /* Modal estilo Win1.0 */
         .modal-win {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -154,28 +169,31 @@
             border-left-color: #ffffff;
             border-right-color: #808080;
             border-bottom-color: #808080;
-            width: 80%;
-            max-width: 300px;
-            padding: 16px;
+            width: 85%;
+            max-width: 320px;
+            padding: 20px;
         }
         .modal-dialog h3 {
             background: #000080;
             color: white;
-            padding: 4px;
-            margin-bottom: 12px;
+            padding: 6px;
+            margin-bottom: 16px;
             font-size: 1rem;
+            text-align: center;
         }
         .modal-dialog p {
             background: #e0e0e0;
             padding: 12px;
             margin: 8px 0;
             font-family: monospace;
+            word-break: break-word;
         }
         .modal-buttons {
             display: flex;
             gap: 12px;
             justify-content: center;
-            margin-top: 16px;
+            margin-top: 20px;
+            flex-wrap: wrap;
         }
         .modal-btn {
             background: #c0c0c0;
@@ -184,7 +202,7 @@
             border-left-color: #ffffff;
             border-right-color: #808080;
             border-bottom-color: #808080;
-            padding: 6px 12px;
+            padding: 6px 14px;
             font-family: monospace;
             font-weight: bold;
             cursor: pointer;
@@ -198,19 +216,20 @@
 
         footer {
             text-align: center;
-            font-size: 0.6rem;
-            margin-top: 16px;
-            color: #ffffaa;
-            text-shadow: 1px 1px 0 #000;
+            font-size: 0.65rem;
+            margin-top: 24px;
+            color: #000;
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
-        @media (max-width: 500px) {
-            .win-button { font-size: 0.8rem; padding: 6px 12px; }
-            .title-bar { font-size: 0.7rem; }
+        @media (max-width: 560px) {
+            .win-button { font-size: 0.8rem; padding: 10px 12px; }
+            .title-bar { font-size: 0.8rem; }
+            .terminal-win { font-size: 0.7rem; height: 65vh; }
+            canvas { max-width: 300px; }
         }
     </style>
 </head>
@@ -220,37 +239,38 @@
     <div id="splashScreen" class="window">
         <div class="title-bar"><span>Pabellón de Poesía</span><span>⤡</span></div>
         <div class="window-content">
-            <canvas id="flagCanvas" width="320" height="240" style="width:100%; max-width:320px; aspect-ratio:320/240"></canvas>
-            <button id="btnEmpezar" class="win-button" style="width:100%; margin-top:20px;">▶ EMPEZAR</button>
+            <canvas id="flagCanvas" width="320" height="240" style="width:100%; max-width:360px; aspect-ratio:320/240"></canvas>
+            <button id="btnEmpezar" class="win-button" style="width:100%; margin-top:24px;">▶ EMPEZAR</button>
+            <footer>Windows 1.0 – 1985</footer>
         </div>
     </div>
 
     <!-- Pantalla 2: carga de computadora (MS-DOS) -->
     <div id="loadingScreen" class="window hidden">
         <div class="title-bar"><span>MS-DOS Prompt</span><span>⎕</span></div>
-        <div class="window-content" style="padding: 4px;">
+        <div class="window-content" style="padding: 6px;">
             <div id="terminalBox" class="terminal-win"></div>
         </div>
     </div>
 
-    <!-- Pantalla 3: menú principal (ventana principal) -->
+    <!-- Pantalla 3: menú principal -->
     <div id="mainMenu" class="window hidden">
         <div class="title-bar"><span>LA CUESTIÓN - Menú</span><span>⎕</span></div>
         <div class="window-content">
-            <div style="text-align:center; margin-bottom:24px;">
-                <div style="background:#000080; color:white; padding:8px; font-size:1.2rem; letter-spacing:2px;">LA CUESTIÓN</div>
+            <div style="text-align:center; margin-bottom:20px;">
+                <div style="background:#000080; color:white; padding:10px; font-size:1.3rem; letter-spacing:2px;">LA CUESTIÓN</div>
             </div>
-            <div style="display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; flex-direction:column; gap:20px; max-width:300px; margin:0 auto; width:100%;">
                 <button id="btnUbicacion" class="win-button">📍 UBICACIÓN</button>
                 <button id="btnEntradas" class="win-button">🎟️ ENTRADAS</button>
                 <button id="btnPista" class="win-button">🔍 PISTA</button>
             </div>
-            <footer style="margin-top:24px; color:#000;">Windows 1.0 – 1985</footer>
+            <footer style="margin-top:32px;">Windows 1.0 – 1985</footer>
         </div>
     </div>
 </div>
 
-<!-- Modal estilo Win1.0 -->
+<!-- Modal -->
 <div id="modalWin" class="modal-win">
     <div class="modal-dialog">
         <h3 id="modalTitle">---</h3>
@@ -264,7 +284,7 @@
 
 <script>
     (function() {
-        // ---------- CANVAS: mástil y bandera flameante estilo Windows 1.0 (pixelado) ----------
+        // ---------- CANVAS: mástil + bandera flameante (estilo pixel, Windows 1.0) ----------
         const canvas = document.getElementById('flagCanvas');
         let animFrame = 0;
         let animInterval = null;
@@ -280,13 +300,13 @@
             // Fondo gris claro de ventana
             ctx.fillStyle = '#c0c0c0';
             ctx.fillRect(0, 0, w, h);
-            // Simular pasto "pixel" en la base (opcional)
+            // Pasto pixelado base
             for (let i=0; i<w/4; i++) {
                 ctx.fillStyle = (i%2) ? '#2d6a2d' : '#1f4f1f';
-                ctx.fillRect(i*4, h-24, 4, 24);
+                ctx.fillRect(i*4, h-28, 4, 28);
             }
             
-            // Mástito estilo 8-bit
+            // Mástil
             const mastilX = 100;
             const mastilW = 12;
             const mastilH = 140;
@@ -306,32 +326,31 @@
             // Bandera blanca
             const flagX = mastilX + mastilW;
             const flagY = 44;
-            const ancho = 130;
-            const alto = 52;
+            const ancho = 140;
+            const alto = 56;
             ctx.fillStyle = '#fffbe6';
             ctx.fillRect(flagX, flagY, ancho, alto);
             ctx.fillStyle = '#1f1a10';
             ctx.strokeRect(flagX, flagY, ancho, alto);
             
-            // Flameo pixelado (el borde inferior se ondula)
-            const frameMod = frame % 12;
+            // Flameo pixelado (borde inferior ondulado)
             for (let seg = 0; seg < 5; seg++) {
-                let offsetY = flagY+alto - 5 + Math.sin(seg * 1.0 + frame * 0.3) * 2 | 0;
+                let offsetY = flagY+alto - 5 + Math.sin(seg * 1.1 + frame * 0.4) * 2 | 0;
                 ctx.fillStyle = '#fffbe6';
-                ctx.fillRect(flagX + seg*24, offsetY, 22, 6);
+                ctx.fillRect(flagX + seg*26, offsetY, 24, 6);
                 ctx.fillStyle = '#1f1a10';
-                ctx.fillRect(flagX + seg*24, offsetY, 22, 2);
+                ctx.fillRect(flagX + seg*26, offsetY, 24, 2);
             }
             // Texto pixel
             ctx.font = 'bold 8px "Courier New", monospace';
             ctx.fillStyle = '#000';
-            ctx.fillText("AQUI SE ESTA", flagX+20, flagY+18);
-            ctx.fillText("LEYENDO", flagX+32, flagY+34);
-            ctx.fillText("POESIA", flagX+40, flagY+50);
-            // detalles
+            ctx.fillText("AQUI SE ESTA", flagX+22, flagY+20);
+            ctx.fillText("LEYENDO", flagX+36, flagY+36);
+            ctx.fillText("POESIA", flagX+44, flagY+52);
+            // detalles estrella
             ctx.fillStyle = '#ffd966';
             ctx.fillRect(flagX+ancho-12, flagY+8, 5,5);
-            ctx.fillRect(flagX+ancho-24, flagY+20, 5,5);
+            ctx.fillRect(flagX+ancho-24, flagY+22, 5,5);
         }
         
         function startFlagAnimation() {
@@ -339,7 +358,7 @@
             let f = 0;
             animInterval = setInterval(() => {
                 drawFlag(f++);
-            }, 160);
+            }, 150);
         }
         if (canvas) startFlagAnimation();
 
@@ -394,17 +413,17 @@
                     for(let i=0; i<20; i++) if(terminalDiv.firstChild) terminalDiv.removeChild(terminalDiv.firstChild);
                 }
             }
-            const fast = setInterval(addLine, 35);
+            const fast = setInterval(addLine, 30);
             intervals.push(fast);
             setTimeout(() => {
                 clearInterval(fast);
-                const slow = setInterval(addLine, 110);
+                const slow = setInterval(addLine, 100);
                 intervals.push(slow);
                 setTimeout(() => {
                     clearInterval(slow);
                     finishLoading();
-                }, 2700);
-            }, 2200);
+                }, 2500);
+            }, 2000);
             const safety = setTimeout(() => finishLoading(), 5500);
             intervals.push(safety);
         }
@@ -425,7 +444,7 @@
             window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
         });
         
-        // ENTRADAS: modal con opciones, abre MP en nueva pestaña (no reemplaza)
+        // ENTRADAS: modal con opciones, abre MP en nueva pestaña
         document.getElementById('btnEntradas').addEventListener('click', (e) => {
             e.preventDefault();
             const alias = "ellorenzopa.banda";
