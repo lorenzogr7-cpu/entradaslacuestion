@@ -328,7 +328,7 @@
             '1': { 
                 bg: '#2c0a0a', text: '#ffcc00', accent: '#ff4d4d', titleBg: '#8b0000', titleText: '#ffcc66', 
                 windowBg: '#3a1a1a', contentBg: '#4a2a2a', buttonBg: '#8b3a3a', buttonBorder: '#ff9966',
-                beat: { bpm: 70, pattern: [1,0,0,1,0,1,0,0] } // bombo, silencio, silencio, caja, etc.
+                beat: { bpm: 70, pattern: [1,0,0,1,0,1,0,0] } // bombo, silencio, silencio, caja
             },
             '2': { 
                 bg: '#0a2a4a', text: '#aaffff', accent: '#00aaff', titleBg: '#003366', titleText: '#ffffff',
@@ -353,7 +353,7 @@
             'poesia': { 
                 bg: '#1a1a2e', text: '#f5e6d3', accent: '#d4af37', titleBg: '#2c2c54', titleText: '#ffdf8c',
                 windowBg: '#2a2a40', contentBg: '#3a3a55', buttonBg: '#4a3a6a', buttonBorder: '#e8c87a',
-                beat: { bpm: 65, pattern: [1,0,0,0,1,0,0,0,1,0,0,1] } // lento y misterioso
+                beat: { bpm: 65, pattern: [1,0,0,0,1,0,0,0,1,0,0,1] } // lento
             }
         };
 
@@ -361,7 +361,7 @@
         let beatInterval = null;
         let audioCtx = null;
 
-        // ========== 2. SONIDOS: tecla (máquina de escribir) y beats (bombo y caja) ==========
+        // ========== 2. SONIDOS: tecla SUTIL (volumen bajo y suave) y beats (bombo) ==========
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -369,6 +369,7 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
+        // Sonido de máquina de escribir más sutil: volumen bajo, frecuencia suave, envelope corto
         function playTypeSound() {
             if (!audioCtx || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
@@ -376,11 +377,11 @@
             const gain = audioCtx.createGain();
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            osc.frequency.value = 1000 + Math.random() * 500;
-            gain.gain.setValueAtTime(0.06, now);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+            osc.frequency.value = 800 + Math.random() * 300; // más grave
+            gain.gain.setValueAtTime(0.025, now);      // volumen muy bajo
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
             osc.start();
-            osc.stop(now + 0.08);
+            osc.stop(now + 0.1);
         }
 
         function playKick() {
@@ -389,28 +390,13 @@
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'sine';
-            osc.frequency.value = 80;
+            osc.frequency.value = 70;
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.setValueAtTime(0.3, now);
             gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
             osc.start();
             osc.stop(now + 0.3);
-        }
-
-        function playSnare() {
-            if (!audioCtx || audioCtx.state !== 'running') return;
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.value = 180;
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            gain.gain.setValueAtTime(0.2, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-            osc.start();
-            osc.stop(now + 0.2);
         }
 
         function startBeat(flagId) {
@@ -424,12 +410,11 @@
             const bpm = beatData.bpm;
             const pattern = beatData.pattern;
             let step = 0;
-            const intervalTime = (60 / bpm) * 0.5; // negras dobles para más ritmo
+            const intervalTime = (60 / bpm) * 0.5;
             beatInterval = setInterval(() => {
                 if (!audioCtx || audioCtx.state !== 'running') return;
                 const hit = pattern[step % pattern.length];
                 if (hit === 1) playKick();
-                else if (hit === 2) playSnare(); // no usado pero reservado
                 step++;
             }, intervalTime * 1000);
         }
@@ -485,14 +470,14 @@
                     currentLineElement.textContent += line[currentCharIndex];
                     currentCharIndex++;
                     terminal.scrollTop = terminal.scrollHeight;
-                    playTypeSound(); // sonido máquina escribir
+                    playTypeSound(); // sonido máquina escribir sutil
                 } else {
                     currentLineIndex++;
                     currentCharIndex = 0;
                     currentLineElement = null;
                 }
             }
-            // Velocidad más lenta: 140ms por letra (casi dramático)
+            // Velocidad más lenta: 140ms por letra (dramático)
             typingInterval = setInterval(typeNextChar, 140);
         }
 
@@ -540,13 +525,15 @@
             if (footer) footer.style.color = currentPalette.accent;
         }
 
-        // ========== 5. FLUJO DE PANTALLAS ==========
+        // ========== 5. FLUJO DE PANTALLAS (el beat empieza SOLO en el menú) ==========
         let loadingActive = false;
+        let currentFlagId = null;
+
         function startLoading(flagId) {
             if (loadingActive) return;
             loadingActive = true;
-            // Iniciar el ritmo (beat) correspondiente
-            startBeat(flagId);
+            currentFlagId = flagId;
+            // No iniciamos el beat todavía, solo preparamos colores
             splashDiv.classList.add('hidden');
             loadingDiv.classList.remove('hidden');
             mainMenuDiv.classList.add('hidden');
@@ -562,8 +549,11 @@
             loadingDiv.classList.add('hidden');
             mainMenuDiv.classList.remove('hidden');
             applyPaletteToMenu();
+            // AHORA SÍ: iniciar el beat (ritmo) al llegar al menú principal
+            if (currentFlagId) {
+                startBeat(currentFlagId);
+            }
             loadingActive = false;
-            // El beat continúa sonando mientras esté en el menú
         }
 
         // ========== 6. EVENTO DE BANDERAS ==========
@@ -574,7 +564,7 @@
                 let flagId = flag.getAttribute('data-flag');
                 if (!flagId || !colorSchemes[flagId]) flagId = '1';
                 currentPalette = colorSchemes[flagId];
-                initAudio();   // preparar audio (necesario para beat y teclas)
+                initAudio();   // preparar audio (necesario para teclas y beat después)
                 if (!splashDiv.classList.contains('hidden')) {
                     startLoading(flagId);
                 }
@@ -603,7 +593,7 @@
             window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
         });
 
-        // ENTRADAS: con opciones: Copiar alias, Mercado Pago, Naranja X, BNA+
+        // ENTRADAS: Copiar alias primero, luego apps
         document.getElementById('btnEntradas').addEventListener('click', (e) => {
             e.preventDefault();
             const alias = "ellorenzopa.banda";
