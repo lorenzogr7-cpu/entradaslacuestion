@@ -3,162 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LA CUESTIÓN · ULTRA PIXEL</title>
+    <title>LA CUESTIÓN · Windows 1.0</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            image-rendering: crisp-edges;
-            image-rendering: pixelated;
-            image-rendering: pixelated;
+            user-select: none;
         }
+
         body {
-            background: #000;
+            background: #008080;  /* fondo tecla clásico de Windows 1.0 */
+            font-family: 'Courier New', 'MS Sans Serif', monospace;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Courier New', monospace;
-            padding: 8px;
+            padding: 16px;
         }
-        /* Contenedor principal con escala extrema */
-        .pixel-world {
+
+        /* Contenedor de la "aplicación" */
+        .win-app {
             width: 100%;
-            max-width: 500px;
-            background: #000;
-            border: 4px solid #fff;
-            image-rendering: crisp-edges;
+            max-width: 540px;
+            margin: 0 auto;
         }
-        /* Pantallas */
-        .screen {
-            width: 100%;
-            min-height: 70vh;
+
+        /* Estilo de ventana Windows 1.0 */
+        .window {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-top-color: #ffffff;
+            border-left-color: #ffffff;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            box-shadow: 2px 2px 0px #00000066;
+            margin-bottom: 20px;
+        }
+
+        .title-bar {
+            background: #000080;
+            color: white;
+            padding: 4px 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            padding: 16px 12px;
-            background: #0c1a0c;
+            font-family: 'Courier New', monospace;
         }
-        .hidden {
-            display: none !important;
+        .title-bar span:first-child {
+            letter-spacing: 1px;
         }
-        /* Fondo ultra pixel (patrón de 8x8) */
-        .bg-grass {
-            background: #2d6a2d;
-            background-image: repeating-linear-gradient(0deg, #1f4f1f 0px, #1f4f1f 8px, #2d6a2d 8px, #2d6a2d 16px);
+        .title-bar span:last-child {
+            background: #c0c0c0;
+            color: black;
+            padding: 0 6px;
+            margin-left: 8px;
+            border: 1px solid #808080;
+            font-size: 0.8rem;
         }
-        .bg-violet {
-            background: #6a1f6a;
-            background-image: repeating-linear-gradient(45deg, #b438b4 0px, #b438b4 8px, #3eff3e 8px, #3eff3e 16px);
+
+        .window-content {
+            padding: 16px;
+            border: 1px solid #808080;
+            margin: 2px;
+            background: #c0c0c0;
         }
-        /* CANVAS de muy baja resolución (160x144) escalado */
+
+        /* Botones estilo Win1.0 */
+        .win-button {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-top-color: #ffffff;
+            border-left-color: #ffffff;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            padding: 8px 16px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.03s linear;
+            color: #000;
+        }
+        .win-button:active {
+            border-top-color: #808080;
+            border-left-color: #808080;
+            border-right-color: #ffffff;
+            border-bottom-color: #ffffff;
+            transform: translate(1px, 1px);
+        }
+
+        /* Canvas para la bandera */
         canvas {
             display: block;
             margin: 0 auto;
             width: 100%;
-            max-width: 400px;
+            max-width: 380px;
             height: auto;
             image-rendering: crisp-edges;
             image-rendering: pixelated;
-            background: transparent;
-            border: 2px solid #fff;
+            background: #c0c0c0;
+            border: 1px solid #808080;
         }
-        /* Botones toscos */
-        .pixel-btn-big {
-            background: #1a1f1a;
-            border: 4px solid #f7e05e;
+
+        /* Terminal (carga) */
+        .terminal-win {
+            background: #000000;
+            color: #00ff00;
             font-family: 'Courier New', monospace;
-            font-weight: bold;
-            font-size: 1.4rem;
-            padding: 12px 8px;
-            color: #f7e05e;
-            text-align: center;
-            width: 90%;
-            max-width: 260px;
-            margin: 16px auto;
-            cursor: pointer;
-            box-shadow: 5px 5px 0 #000;
-            transition: 0.03s linear;
-            letter-spacing: 2px;
-        }
-        .pixel-btn-big:active {
-            transform: translate(4px, 4px);
-            box-shadow: 1px 1px 0 #000;
-        }
-        /* Terminal de carga */
-        .terminal {
-            background: #001200;
-            padding: 20px 12px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.7rem;
-            color: #3eff6e;
-            height: 320px;
+            padding: 12px;
+            height: 300px;
             overflow-y: auto;
             white-space: pre-wrap;
             word-break: break-all;
-            border: 4px solid #6eff6e;
+            border: 1px solid #808080;
         }
-        .terminal p {
-            margin: 8px 0;
-            border-left: 2px solid #6eff6e;
+        .terminal-win p {
+            margin: 6px 0;
+            border-left: 2px solid #0f0;
             padding-left: 8px;
         }
-        /* Menú */
-        .menu-pixel {
-            width: 100%;
-            text-align: center;
-        }
-        .title-pixel {
-            font-family: 'Courier New', monospace;
-            font-size: 1.6rem;
-            background: #000;
-            color: #fdcc4a;
-            padding: 12px;
-            margin: 20px 0;
-            border: 4px solid #fdcc4a;
-            display: inline-block;
-            letter-spacing: 2px;
-        }
-        .menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            width: 100%;
-            margin: 20px 0;
-        }
-        .menu-btn {
-            background: #111;
-            border: 4px solid #ffeaaf;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            font-size: 1rem;
-            padding: 14px 8px;
-            color: #ffeaaf;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 5px 5px 0 #000;
-            transition: 0.03s linear;
-        }
-        .menu-btn:active {
-            transform: translate(4px, 4px);
-            box-shadow: 1px 1px 0 #000;
-        }
-        footer {
-            font-size: 0.5rem;
-            color: #aaa;
-            margin-top: 24px;
-            text-align: center;
-        }
-        /* Modal ultra pixel */
-        .modal {
+
+        /* Modal estilo Windows */
+        .modal-win {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000000cc;
+            background: rgba(0,0,0,0.5);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -167,192 +143,216 @@
             transition: visibility 0s, opacity 0.1s;
             z-index: 2000;
         }
-        .modal.active {
+        .modal-win.active {
             visibility: visible;
             opacity: 1;
         }
-        .modal-box {
-            background: #131008;
-            border: 6px solid #fbb13c;
-            padding: 20px;
+        .modal-dialog {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-top-color: #ffffff;
+            border-left-color: #ffffff;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
             width: 80%;
             max-width: 300px;
-            text-align: center;
+            padding: 16px;
         }
-        .modal-box h3 {
-            font-family: 'Courier New', monospace;
+        .modal-dialog h3 {
+            background: #000080;
+            color: white;
+            padding: 4px;
+            margin-bottom: 12px;
             font-size: 1rem;
-            color: #fbb13c;
-            margin-bottom: 16px;
         }
-        .modal-box p {
-            background: #242018;
+        .modal-dialog p {
+            background: #e0e0e0;
             padding: 12px;
-            color: #f7e7b4;
+            margin: 8px 0;
             font-family: monospace;
-            font-size: 0.7rem;
-            border-left: 4px solid #fea82f;
         }
-        .modal-btns {
+        .modal-buttons {
             display: flex;
             gap: 12px;
             justify-content: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
+            margin-top: 16px;
         }
         .modal-btn {
-            background: #2e2a1f;
-            border: none;
+            background: #c0c0c0;
+            border: 2px solid;
+            border-top-color: #ffffff;
+            border-left-color: #ffffff;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            padding: 6px 12px;
             font-family: monospace;
             font-weight: bold;
-            font-size: 0.7rem;
-            padding: 8px 16px;
-            color: #ffdf93;
-            box-shadow: 3px 3px 0 #000;
             cursor: pointer;
         }
         .modal-btn:active {
-            transform: translate(2px,2px);
-            box-shadow: 1px 1px 0 #000;
+            border-top-color: #808080;
+            border-left-color: #808080;
+            border-right-color: #ffffff;
+            border-bottom-color: #ffffff;
         }
+
+        footer {
+            text-align: center;
+            font-size: 0.6rem;
+            margin-top: 16px;
+            color: #ffffaa;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .hidden {
+            display: none;
+        }
+
         @media (max-width: 500px) {
-            .pixel-btn-big { font-size: 1rem; }
-            .title-pixel { font-size: 1rem; }
-            .menu-btn { font-size: 0.7rem; }
-            .terminal { font-size: 0.5rem; }
+            .win-button { font-size: 0.8rem; padding: 6px 12px; }
+            .title-bar { font-size: 0.7rem; }
         }
     </style>
 </head>
 <body>
-<div class="pixel-world">
-    <!-- PANTALLA INICIAL (pasto verde) -->
-    <div id="splashScreen" class="screen bg-grass">
-        <canvas id="pixelCanvas" width="160" height="144" style="width:100%; max-width:320px; aspect-ratio:160/144"></canvas>
-        <button id="btnEmpezar" class="pixel-btn-big">► EMPEZAR</button>
-        <footer>8-BIT EXTREMO</footer>
+<div class="win-app">
+    <!-- Pantalla 1: mástil + bandera -->
+    <div id="splashScreen" class="window">
+        <div class="title-bar"><span>Pabellón de Poesía</span><span>⤡</span></div>
+        <div class="window-content">
+            <canvas id="flagCanvas" width="320" height="240" style="width:100%; max-width:320px; aspect-ratio:320/240"></canvas>
+            <button id="btnEmpezar" class="win-button" style="width:100%; margin-top:20px;">▶ EMPEZAR</button>
+        </div>
     </div>
 
-    <!-- PANTALLA DE CARGA (computadora) -->
-    <div id="loadingScreen" class="screen bg-grass hidden">
-        <div id="terminalText" class="terminal"></div>
+    <!-- Pantalla 2: carga de computadora (MS-DOS) -->
+    <div id="loadingScreen" class="window hidden">
+        <div class="title-bar"><span>MS-DOS Prompt</span><span>⎕</span></div>
+        <div class="window-content" style="padding: 4px;">
+            <div id="terminalBox" class="terminal-win"></div>
+        </div>
     </div>
 
-    <!-- MENÚ PRINCIPAL (pasto violeta + flúor) -->
-    <div id="mainMenu" class="screen bg-violet hidden">
-        <div class="menu-pixel">
-            <div class="title-pixel">LA CUESTIÓN</div>
-            <div class="menu-buttons">
-                <button id="btnUbicacion" class="menu-btn">📍 UBICACIÓN</button>
-                <button id="btnEntradas" class="menu-btn">🎟️ ENTRADAS</button>
-                <button id="btnPista" class="menu-btn">🔍 PISTA</button>
+    <!-- Pantalla 3: menú principal (ventana principal) -->
+    <div id="mainMenu" class="window hidden">
+        <div class="title-bar"><span>LA CUESTIÓN - Menú</span><span>⎕</span></div>
+        <div class="window-content">
+            <div style="text-align:center; margin-bottom:24px;">
+                <div style="background:#000080; color:white; padding:8px; font-size:1.2rem; letter-spacing:2px;">LA CUESTIÓN</div>
             </div>
-            <footer>✦ PIXEL DURO ✦</footer>
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                <button id="btnUbicacion" class="win-button">📍 UBICACIÓN</button>
+                <button id="btnEntradas" class="win-button">🎟️ ENTRADAS</button>
+                <button id="btnPista" class="win-button">🔍 PISTA</button>
+            </div>
+            <footer style="margin-top:24px; color:#000;">Windows 1.0 – 1985</footer>
         </div>
     </div>
 </div>
 
-<!-- MODAL -->
-<div id="pixelModal" class="modal">
-    <div class="modal-box">
+<!-- Modal estilo Win1.0 -->
+<div id="modalWin" class="modal-win">
+    <div class="modal-dialog">
         <h3 id="modalTitle">---</h3>
         <p id="modalMessage"></p>
-        <div id="modalExtraButtons" class="modal-btns"></div>
-        <div class="modal-btns">
-            <button id="closeModalBtn" class="modal-btn">CERRAR</button>
+        <div id="modalExtra" class="modal-buttons"></div>
+        <div class="modal-buttons">
+            <button id="closeModalBtn" class="modal-btn">Cerrar</button>
         </div>
     </div>
 </div>
 
 <script>
     (function() {
-        // ---------- CANVAS PIXEL EXTREMO: mástil + bandera flameante (pixel a pixel) ----------
-        const canvas = document.getElementById('pixelCanvas');
+        // ---------- CANVAS: mástil y bandera flameante estilo Windows 1.0 (pixelado) ----------
+        const canvas = document.getElementById('flagCanvas');
         let animFrame = 0;
         let animInterval = null;
-        
-        function drawPixelMastil(frame) {
+
+        function drawFlag(frame) {
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            const w = 160, h = 144;
+            const w = 320, h = 240;
             canvas.width = w;
             canvas.height = h;
             ctx.imageSmoothingEnabled = false;
             
-            // Fondo pasto pixel (verde)
-            for (let i = 0; i < w/4; i++) {
-                for (let j = 0; j < h/4; j++) {
-                    ctx.fillStyle = (i+j)%2 === 0 ? '#2a8a2a' : '#1a5a1a';
-                    ctx.fillRect(i*4, j*4, 4, 4);
-                }
+            // Fondo gris claro de ventana
+            ctx.fillStyle = '#c0c0c0';
+            ctx.fillRect(0, 0, w, h);
+            // Simular pasto "pixel" en la base (opcional)
+            for (let i=0; i<w/4; i++) {
+                ctx.fillStyle = (i%2) ? '#2d6a2d' : '#1f4f1f';
+                ctx.fillRect(i*4, h-24, 4, 24);
             }
             
-            // Mástil (bloques de 4x4)
-            const mastilX = 60;
-            const mastilW = 8;
-            const mastilH = 80;
+            // Mástito estilo 8-bit
+            const mastilX = 100;
+            const mastilW = 12;
+            const mastilH = 140;
             ctx.fillStyle = '#8b5a2b';
-            ctx.fillRect(mastilX, 28, mastilW, mastilH);
+            ctx.fillRect(mastilX, 40, mastilW, mastilH);
             ctx.fillStyle = '#c2823a';
-            for (let y = 28; y < 28+mastilH; y+=6) {
-                ctx.fillRect(mastilX+2, y, 2, 3);
-                ctx.fillRect(mastilX+4, y+3, 2, 3);
+            for (let y = 40; y < 40+mastilH; y+=8) {
+                ctx.fillRect(mastilX+3, y, 3, 4);
+                ctx.fillRect(mastilX+7, y+4, 3, 4);
             }
-            // bola
+            // bola superior
             ctx.fillStyle = '#e5b83c';
-            ctx.fillRect(mastilX-4, 20, 16, 8);
+            ctx.fillRect(mastilX-4, 28, 20, 12);
             ctx.fillStyle = '#b47a22';
-            ctx.fillRect(mastilX-2, 16, 12, 4);
+            ctx.fillRect(mastilX-2, 22, 16, 6);
             
-            // Bandera blanca (ondeo con frame)
+            // Bandera blanca
             const flagX = mastilX + mastilW;
-            const flagY = 24;
-            const ancho = 68;
-            const alto = 36;
+            const flagY = 44;
+            const ancho = 130;
+            const alto = 52;
             ctx.fillStyle = '#fffbe6';
             ctx.fillRect(flagX, flagY, ancho, alto);
             ctx.fillStyle = '#1f1a10';
             ctx.strokeRect(flagX, flagY, ancho, alto);
-            // Flameo pixelado: el borde inferior sube y baja
-            const t = frame % 12;
-            for (let seg = 0; seg < 4; seg++) {
-                const offsetY = flagY+alto - 4 - (Math.sin(seg * 1.2 + frame * 0.4) * 2 | 0);
+            
+            // Flameo pixelado (el borde inferior se ondula)
+            const frameMod = frame % 12;
+            for (let seg = 0; seg < 5; seg++) {
+                let offsetY = flagY+alto - 5 + Math.sin(seg * 1.0 + frame * 0.3) * 2 | 0;
                 ctx.fillStyle = '#fffbe6';
-                ctx.fillRect(flagX + seg*16, offsetY, 14, 6);
+                ctx.fillRect(flagX + seg*24, offsetY, 22, 6);
                 ctx.fillStyle = '#1f1a10';
-                ctx.fillRect(flagX + seg*16, offsetY, 14, 2);
+                ctx.fillRect(flagX + seg*24, offsetY, 22, 2);
             }
-            // Texto pixel (4px de alto)
-            ctx.font = 'bold 6px "Courier New", monospace';
+            // Texto pixel
+            ctx.font = 'bold 8px "Courier New", monospace';
             ctx.fillStyle = '#000';
-            ctx.fillText("AQUI", flagX+8, flagY+12);
-            ctx.fillText("SE", flagX+28, flagY+12);
-            ctx.fillText("ESTA", flagX+44, flagY+12);
-            ctx.fillText("LEYENDO", flagX+12, flagY+26);
-            ctx.fillText("POESIA", flagX+22, flagY+38);
-            // estrella
+            ctx.fillText("AQUI SE ESTA", flagX+20, flagY+18);
+            ctx.fillText("LEYENDO", flagX+32, flagY+34);
+            ctx.fillText("POESIA", flagX+40, flagY+50);
+            // detalles
             ctx.fillStyle = '#ffd966';
-            ctx.fillRect(flagX+ancho-10, flagY+6, 4,4);
+            ctx.fillRect(flagX+ancho-12, flagY+8, 5,5);
+            ctx.fillRect(flagX+ancho-24, flagY+20, 5,5);
         }
         
-        function startAnimation() {
+        function startFlagAnimation() {
             if (animInterval) clearInterval(animInterval);
-            let frame = 0;
+            let f = 0;
             animInterval = setInterval(() => {
-                drawPixelMastil(frame++);
-            }, 150);
+                drawFlag(f++);
+            }, 160);
         }
-        if (canvas) startAnimation();
-        
+        if (canvas) startFlagAnimation();
+
         // ---------- CONTROL DE PANTALLAS ----------
-        const splash = document.getElementById('splashScreen');
-        const loadingScreen = document.getElementById('loadingScreen');
-        const mainMenu = document.getElementById('mainMenu');
+        const splashDiv = document.getElementById('splashScreen');
+        const loadingDiv = document.getElementById('loadingScreen');
+        const mainMenuDiv = document.getElementById('mainMenu');
         const empezarBtn = document.getElementById('btnEmpezar');
-        const terminalDiv = document.getElementById('terminalText');
-        const modal = document.getElementById('pixelModal');
+        const terminalDiv = document.getElementById('terminalBox');
+        const modal = document.getElementById('modalWin');
         const modalTitle = document.getElementById('modalTitle');
         const modalMessage = document.getElementById('modalMessage');
-        const modalExtra = document.getElementById('modalExtraButtons');
+        const modalExtra = document.getElementById('modalExtra');
         const closeModalBtn = document.getElementById('closeModalBtn');
         
         function closeModal() {
@@ -362,119 +362,127 @@
         closeModalBtn.addEventListener('click', closeModal);
         modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
         
-        let timers = [];
-        function limpiarTimers() {
-            timers.forEach(t => clearInterval(t));
-            timers = [];
+        let intervals = [];
+        function clearAllIntervals() {
+            intervals.forEach(i => clearInterval(i));
+            intervals = [];
         }
         
-        function iniciarCarga() {
-            splash.classList.add('hidden');
-            loadingScreen.classList.remove('hidden');
-            mainMenu.classList.add('hidden');
+        // CARGA DE COMPUTADORA (MS-DOS)
+        function startLoading() {
+            splashDiv.classList.add('hidden');
+            loadingDiv.classList.remove('hidden');
+            mainMenuDiv.classList.add('hidden');
             terminalDiv.innerHTML = '';
-            const base = "> la cuestión está sucediendo en este momento";
-            const codes = ["[SYS]","[KERNEL]","[PROC]","[MEM]","[POESIA]"];
-            let count = 0;
+            const baseMsg = "> la cuestión está sucediendo en este momento";
+            const variants = [
+                "[SYS] la cuestión está sucediendo en este momento",
+                "[KERNEL] la cuestión está sucediendo en este momento",
+                "[PROCESO] la cuestión está sucediendo en este momento",
+                "[POESÍA] la cuestión está sucediendo en este momento"
+            ];
+            let lineCount = 0;
             function addLine() {
-                if (loadingScreen.classList.contains('hidden')) return;
+                if (loadingDiv.classList.contains('hidden')) return;
                 const p = document.createElement('p');
-                let txt = (count%2 === 0) ? codes[count%codes.length] + " " + base : base + " [" + Math.floor(Math.random()*0xFF).toString(16) + "]";
-                p.textContent = txt;
+                let text = (lineCount % 3 === 0) ? variants[lineCount % variants.length] : baseMsg + " [" + Math.floor(Math.random()*0xFFF).toString(16) + "]";
+                p.textContent = text;
                 terminalDiv.appendChild(p);
                 terminalDiv.scrollTop = terminalDiv.scrollHeight;
-                count++;
+                lineCount++;
                 if (terminalDiv.children.length > 80) {
-                    while(terminalDiv.children.length > 60) terminalDiv.removeChild(terminalDiv.firstChild);
+                    for(let i=0; i<20; i++) if(terminalDiv.firstChild) terminalDiv.removeChild(terminalDiv.firstChild);
                 }
             }
-            const rapid = setInterval(addLine, 25);
-            timers.push(rapid);
+            const fast = setInterval(addLine, 35);
+            intervals.push(fast);
             setTimeout(() => {
-                clearInterval(rapid);
-                const slow = setInterval(addLine, 90);
-                timers.push(slow);
+                clearInterval(fast);
+                const slow = setInterval(addLine, 110);
+                intervals.push(slow);
                 setTimeout(() => {
                     clearInterval(slow);
-                    finalizar();
-                }, 2400);
-            }, 2000);
-            const safety = setTimeout(finalizar, 5000);
-            timers.push(safety);
+                    finishLoading();
+                }, 2700);
+            }, 2200);
+            const safety = setTimeout(() => finishLoading(), 5500);
+            intervals.push(safety);
         }
         
-        function finalizar() {
-            limpiarTimers();
-            loadingScreen.classList.add('hidden');
-            mainMenu.classList.remove('hidden');
+        function finishLoading() {
+            clearAllIntervals();
+            loadingDiv.classList.add('hidden');
+            mainMenuDiv.classList.remove('hidden');
             terminalDiv.innerHTML = '';
         }
         
         empezarBtn.addEventListener('click', () => {
-            if (!splash.classList.contains('hidden')) iniciarCarga();
+            if (!splashDiv.classList.contains('hidden')) startLoading();
         });
         
-        // Botones menú
+        // ---------- BOTONES DEL MENÚ ----------
         document.getElementById('btnUbicacion').addEventListener('click', () => {
             window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
         });
         
+        // ENTRADAS: modal con opciones, abre MP en nueva pestaña (no reemplaza)
         document.getElementById('btnEntradas').addEventListener('click', (e) => {
             e.preventDefault();
             const alias = "ellorenzopa.banda";
             const monto = "4000";
-            modalTitle.innerText = "ENTRADA $4000";
-            modalMessage.innerText = `Alias: ${alias}\nMonto: $${monto}\nElegí:`;
+            modalTitle.innerText = "Entradas - $4000";
+            modalMessage.innerText = `Alias: ${alias}\nMonto: ARS ${monto}`;
             modalExtra.innerHTML = '';
-            const mpBtn = document.createElement('button');
-            mpBtn.innerText = "MERCADO PAGO";
-            mpBtn.classList.add('modal-btn');
-            mpBtn.addEventListener('click', () => {
+            
+            const btnOpenMP = document.createElement('button');
+            btnOpenMP.innerText = "Abrir Mercado Pago";
+            btnOpenMP.classList.add('modal-btn');
+            btnOpenMP.addEventListener('click', () => {
                 window.open('https://www.mercadopago.com.ar/transferencias', '_blank');
                 closeModal();
             });
-            const copyBtn = document.createElement('button');
-            copyBtn.innerText = "COPIAR ALIAS";
-            copyBtn.classList.add('modal-btn');
-            copyBtn.addEventListener('click', () => {
+            
+            const btnCopy = document.createElement('button');
+            btnCopy.innerText = "Copiar Alias";
+            btnCopy.classList.add('modal-btn');
+            btnCopy.addEventListener('click', () => {
                 navigator.clipboard.writeText(alias).then(() => {
-                    toastPixel("Alias copiado!");
+                    showToast("Alias copiado: " + alias);
                 }).catch(() => alert(alias));
             });
-            modalExtra.appendChild(mpBtn);
-            modalExtra.appendChild(copyBtn);
+            
+            modalExtra.appendChild(btnOpenMP);
+            modalExtra.appendChild(btnCopy);
             modal.classList.add('active');
         });
         
         document.getElementById('btnPista').addEventListener('click', () => {
-            modalTitle.innerText = "PISTA";
+            modalTitle.innerText = "Pista Oculta";
             modalMessage.innerText = '"seremos el centro del temblor"';
             modalExtra.innerHTML = '';
-            const ok = document.createElement('button');
-            ok.innerText = "OK";
-            ok.classList.add('modal-btn');
-            ok.addEventListener('click', closeModal);
-            modalExtra.appendChild(ok);
+            const okBtn = document.createElement('button');
+            okBtn.innerText = "Entendido";
+            okBtn.classList.add('modal-btn');
+            okBtn.addEventListener('click', closeModal);
+            modalExtra.appendChild(okBtn);
             modal.classList.add('active');
         });
         
-        function toastPixel(msg) {
-            const t = document.createElement('div');
-            t.innerText = msg;
-            t.style.position = 'fixed';
-            t.style.bottom = '40px';
-            t.style.left = '50%';
-            t.style.transform = 'translateX(-50%)';
-            t.style.backgroundColor = '#000';
-            t.style.color = '#fbe86e';
-            t.style.padding = '10px 16px';
-            t.style.fontFamily = 'Courier New, monospace';
-            t.style.fontWeight = 'bold';
-            t.style.fontSize = '0.8rem';
-            t.style.border = '4px solid #ffb347';
-            t.style.zIndex = '10000';
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 2000);
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.innerText = msg;
+            toast.style.position = 'fixed';
+            toast.style.bottom = '40px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.backgroundColor = '#ffffcc';
+            toast.style.color = '#000';
+            toast.style.padding = '8px 16px';
+            toast.style.fontFamily = 'monospace';
+            toast.style.border = '2px solid #000';
+            toast.style.zIndex = '10000';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
         }
     })();
 </script>
