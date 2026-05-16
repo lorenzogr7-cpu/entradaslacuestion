@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LA CUESTIÓN · Poesía y Banderas</title>
+    <title>LA CUESTIÓN · Banderas y Poesía</title>
     <link href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap" rel="stylesheet">
     <style>
         * {
@@ -47,6 +47,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            transition: all 0.2s;
         }
 
         .title-bar {
@@ -60,6 +61,7 @@
             align-items: center;
             font-family: 'Tiny5', monospace;
             flex-shrink: 0;
+            transition: background 0.2s;
         }
 
         .window-content {
@@ -72,9 +74,10 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            transition: background 0.2s;
         }
 
-        /* Contenedor de banderas ficticias */
+        /* Título "elegí tu bandera" */
         .flags-title {
             font-family: 'Tiny5', monospace;
             font-size: 1.2rem;
@@ -86,6 +89,8 @@
             margin: 0 auto 20px auto;
             letter-spacing: 2px;
         }
+
+        /* Contenedor de banderas ficticias */
         .flags-row {
             display: flex;
             flex-wrap: wrap;
@@ -96,6 +101,7 @@
             background: #a0a0a0;
             border: 1px solid #808080;
         }
+
         .fake-flag {
             width: 110px;
             height: 80px;
@@ -120,6 +126,8 @@
         .fake-flag:active {
             transform: scale(0.96);
         }
+
+        /* Estilos específicos de cada bandera ficticia (visual) */
         .flag1 { background: linear-gradient(135deg, #ff4d4d 50%, #ffcc00 50%); }
         .flag2 { background: repeating-linear-gradient(90deg, #00aaff, #00aaff 20px, #ffffff 20px, #ffffff 40px); }
         .flag3 { background: radial-gradient(circle at 30% 40%, #ff66cc, #9933ff); }
@@ -134,11 +142,9 @@
             text-transform: uppercase;
             padding: 8px 4px;
         }
-        .flag-text span {
-            display: block;
-        }
+        .flag-text span { display: block; }
 
-        /* Terminal para el poema */
+        /* Terminal para el poema (con colores dinámicos) */
         .terminal-win {
             font-family: 'Tiny5', monospace;
             padding: 24px 20px;
@@ -149,16 +155,15 @@
             border: 1px solid #808080;
             font-size: 1.1rem;
             line-height: 1.6;
-            background: #000000;
-            color: #00ff00;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
         .poem-line {
             margin: 12px 0;
-            border-left: 3px solid #0f0;
             padding-left: 16px;
+            transition: border-left-color 0.2s;
         }
 
+        /* Botón del menú (estilo base) */
         .win-button {
             background: #c0c0c0;
             border: 2px solid;
@@ -172,7 +177,7 @@
             font-size: 1rem;
             cursor: pointer;
             text-align: center;
-            transition: 0.03s linear;
+            transition: 0.03s linear, background 0.2s;
             color: #000;
         }
         .win-button:active {
@@ -183,6 +188,7 @@
             transform: translate(1px, 1px);
         }
 
+        /* Modal */
         .modal-win {
             position: fixed;
             top: 0;
@@ -270,7 +276,7 @@
 </head>
 <body>
 <div class="win-app">
-    <!-- Pantalla 1: solo banderas ficticias -->
+    <!-- Pantalla 1: banderas ficticias -->
     <div id="splashScreen" class="window">
         <div class="title-bar"><span>Galería de Banderas</span><span>⤡</span></div>
         <div class="window-content">
@@ -294,7 +300,7 @@
         </div>
     </div>
 
-    <!-- Pantalla 2: carga con el poema escribiéndose letra por letra -->
+    <!-- Pantalla 2: carga con poema (colores dinámicos) -->
     <div id="loadingScreen" class="window hidden">
         <div class="title-bar"><span>Poema en carga</span><span>⎕</span></div>
         <div class="window-content" style="padding: 6px;">
@@ -302,12 +308,12 @@
         </div>
     </div>
 
-    <!-- Pantalla 3: menú principal -->
+    <!-- Pantalla 3: menú principal (colores dinámicos) -->
     <div id="mainMenu" class="window hidden">
         <div class="title-bar"><span>LA CUESTIÓN - Menú</span><span>⎕</span></div>
-        <div class="window-content">
+        <div class="window-content" id="mainMenuContent">
             <div style="text-align:center; margin-bottom:20px;">
-                <div style="background:#000080; color:white; padding:10px; font-size:1.3rem; letter-spacing:2px;">LA CUESTIÓN</div>
+                <div id="menuTitle" style="background:#000080; color:white; padding:10px; font-size:1.3rem; letter-spacing:2px;">LA CUESTIÓN</div>
             </div>
             <div style="display:flex; flex-direction:column; gap:20px; max-width:300px; margin:0 auto; width:100%;">
                 <button id="btnUbicacion" class="win-button">📍 UBICACIÓN</button>
@@ -333,6 +339,90 @@
 
 <script>
     (function() {
+        // ----- PALETAS DE COLORES PARA CADA BANDERA FICTICIA -----
+        // (fondo, texto, acento, título, borde)
+        const colorSchemes = {
+            '1': {   // bandera rojo/amarillo
+                bg: '#2c0a0a',
+                text: '#ffcc00',
+                accent: '#ff4d4d',
+                titleBg: '#8b0000',
+                titleText: '#ffcc66',
+                windowBg: '#3a1a1a',
+                contentBg: '#4a2a2a',
+                buttonBg: '#8b3a3a',
+                buttonBorder: '#ff9966'
+            },
+            '2': {   // azul/blanco
+                bg: '#0a2a4a',
+                text: '#aaffff',
+                accent: '#00aaff',
+                titleBg: '#003366',
+                titleText: '#ffffff',
+                windowBg: '#1a3a5a',
+                contentBg: '#2a4a6a',
+                buttonBg: '#2a6a9a',
+                buttonBorder: '#88ccff'
+            },
+            '3': {   // rosa/púrpura
+                bg: '#2a0a2a',
+                text: '#ffccff',
+                accent: '#ff66cc',
+                titleBg: '#660066',
+                titleText: '#ffccff',
+                windowBg: '#3a1a3a',
+                contentBg: '#4a2a4a',
+                buttonBg: '#8a3a8a',
+                buttonBorder: '#ff88dd'
+            },
+            '4': {   // verde/naranja
+                bg: '#1a3a1a',
+                text: '#ccff66',
+                accent: '#33cc33',
+                titleBg: '#2d6a2d',
+                titleText: '#ffff99',
+                windowBg: '#2a4a2a',
+                contentBg: '#3a5a3a',
+                buttonBg: '#5a8a3a',
+                buttonBorder: '#aaff66'
+            },
+            '5': {   // naranja/verde/azul
+                bg: '#3a1a00',
+                text: '#ffaa66',
+                accent: '#ff6600',
+                titleBg: '#a0522d',
+                titleText: '#ffdd99',
+                windowBg: '#4a2a10',
+                contentBg: '#5a3a20',
+                buttonBg: '#b86b2a',
+                buttonBorder: '#ffaa66'
+            },
+            'poesia': { // bandera de poesía
+                bg: '#1a1a2e',
+                text: '#f5e6d3',
+                accent: '#d4af37',
+                titleBg: '#2c2c54',
+                titleText: '#ffdf8c',
+                windowBg: '#2a2a40',
+                contentBg: '#3a3a55',
+                buttonBg: '#4a3a6a',
+                buttonBorder: '#e8c87a'
+            }
+        };
+
+        let currentPalette = colorSchemes['1']; // por defecto
+
+        // ----- POEMA COMPLETO (con la "k" incluida) -----
+        const poemLines = [
+            "y al final,",
+            "un poco más tarde ke ahora,",
+            "cuando estés volviendo a tu casa,",
+            "mirarte y decir:",
+            "hoy fue para mi.",
+            "hoy, a este mundo,",
+            "le robé una noche"
+        ];
+
         // ----- ELEMENTOS DOM -----
         const splashDiv = document.getElementById('splashScreen');
         const loadingDiv = document.getElementById('loadingScreen');
@@ -343,18 +433,7 @@
         const modalMessage = document.getElementById('modalMessage');
         const modalExtra = document.getElementById('modalExtra');
         const closeModalBtn = document.getElementById('closeModalBtn');
-        
-        // ----- POEMA COMPLETO (respetando la "k" y saltos de línea) -----
-        const poemLines = [
-            "y al final,",
-            "un poco más tarde ke ahora,",
-            "cuando estés volviendo a tu casa,",
-            "mirarte y decir:",
-            "hoy fue para mi.",
-            "hoy, a este mundo,",
-            "le robé una noche"
-        ];
-        
+
         // ----- FUNCIONES MODAL -----
         function closeModal() {
             modal.classList.remove('active');
@@ -362,105 +441,147 @@
         }
         closeModalBtn.addEventListener('click', closeModal);
         modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
-        
+
+        // ----- APLICAR PALETA A LOS ELEMENTOS DE LA PANTALLA ACTIVA -----
+        function applyPaletteToLoading() {
+            const terminal = document.getElementById('poemTerminal');
+            if (!terminal) return;
+            terminal.style.backgroundColor = currentPalette.bg;
+            terminal.style.color = currentPalette.text;
+            terminal.style.borderColor = currentPalette.accent;
+            // Cambiar también la barra de título de la ventana de carga
+            const loadingTitle = loadingDiv.querySelector('.title-bar');
+            if (loadingTitle) loadingTitle.style.background = currentPalette.titleBg;
+            // Fondo del contenido
+            const loadingContent = loadingDiv.querySelector('.window-content');
+            if (loadingContent) loadingContent.style.backgroundColor = currentPalette.contentBg;
+        }
+
+        function applyPaletteToMenu() {
+            const menuWindow = mainMenuDiv;
+            if (!menuWindow) return;
+            // Barra de título
+            const titleBar = menuWindow.querySelector('.title-bar');
+            if (titleBar) titleBar.style.background = currentPalette.titleBg;
+            // Fondo del contenido del menú
+            const contentDiv = document.getElementById('mainMenuContent');
+            if (contentDiv) contentDiv.style.backgroundColor = currentPalette.contentBg;
+            // Título "LA CUESTIÓN"
+            const menuTitle = document.getElementById('menuTitle');
+            if (menuTitle) {
+                menuTitle.style.background = currentPalette.titleBg;
+                menuTitle.style.color = currentPalette.titleText;
+            }
+            // Botones
+            const buttons = menuWindow.querySelectorAll('.win-button');
+            buttons.forEach(btn => {
+                btn.style.backgroundColor = currentPalette.buttonBg;
+                btn.style.color = currentPalette.text;
+                btn.style.borderTopColor = currentPalette.buttonBorder;
+                btn.style.borderLeftColor = currentPalette.buttonBorder;
+                btn.style.borderRightColor = '#808080';
+                btn.style.borderBottomColor = '#808080';
+            });
+            // Footer (opcional)
+            const footer = menuWindow.querySelector('footer');
+            if (footer) footer.style.color = currentPalette.accent;
+        }
+
         // ----- EFECTO MÁQUINA DE ESCRIBIR (letra por letra) -----
         let typingInterval = null;
         let currentLineIndex = 0;
         let currentCharIndex = 0;
         let currentLineElement = null;
-        
+
         function startPoemTyping(callback) {
             poemTerminal.innerHTML = '';
             currentLineIndex = 0;
             currentCharIndex = 0;
-            
+            // Aplicar colores actuales al terminal
+            applyPaletteToLoading();
+
             function typeNextChar() {
                 if (currentLineIndex >= poemLines.length) {
-                    // Terminó el poema
                     if (typingInterval) clearInterval(typingInterval);
                     if (callback) callback();
                     return;
                 }
-                
                 const line = poemLines[currentLineIndex];
                 if (currentCharIndex === 0) {
-                    // Crear nuevo párrafo para esta línea
                     currentLineElement = document.createElement('p');
                     currentLineElement.className = 'poem-line';
+                    currentLineElement.style.borderLeftColor = currentPalette.accent;
                     currentLineElement.textContent = '';
                     poemTerminal.appendChild(currentLineElement);
                     poemTerminal.scrollTop = poemTerminal.scrollHeight;
                 }
-                
                 if (currentCharIndex < line.length) {
-                    // Agregar un caracter (puede ser letra o espacio)
                     currentLineElement.textContent += line[currentCharIndex];
                     currentCharIndex++;
                     poemTerminal.scrollTop = poemTerminal.scrollHeight;
                 } else {
-                    // Pasar a la siguiente línea
                     currentLineIndex++;
                     currentCharIndex = 0;
                     currentLineElement = null;
-                    // Pequeña pausa entre líneas (no afecta al intervalo, solo espera)
                 }
             }
-            
-            typingInterval = setInterval(typeNextChar, 70); // velocidad agradable
+            typingInterval = setInterval(typeNextChar, 70);
         }
-        
+
         function stopTyping() {
-            if (typingInterval) {
-                clearInterval(typingInterval);
-                typingInterval = null;
-            }
+            if (typingInterval) clearInterval(typingInterval);
+            typingInterval = null;
         }
-        
-        // ----- CARGA: mostrar terminal con el poema y luego pasar al menú -----
+
+        // ----- CARGA: muestra el poema y luego el menú con colores -----
         let loadingActive = false;
         function startLoading() {
             if (loadingActive) return;
             loadingActive = true;
-            
             splashDiv.classList.add('hidden');
             loadingDiv.classList.remove('hidden');
             mainMenuDiv.classList.add('hidden');
-            poemTerminal.innerHTML = '';
-            
-            // Iniciar el efecto máquina de escribir
+            // Aplicar colores a la ventana de carga
+            applyPaletteToLoading();
             startPoemTyping(() => {
-                // Cuando termina el poema, esperar un poco y pasar al menú
                 setTimeout(() => {
                     finishLoading();
                 }, 1200);
             });
         }
-        
+
         function finishLoading() {
             stopTyping();
             loadingDiv.classList.add('hidden');
             mainMenuDiv.classList.remove('hidden');
-            poemTerminal.innerHTML = '';
+            // Aplicar paleta al menú
+            applyPaletteToMenu();
             loadingActive = false;
         }
-        
-        // ----- AL HACER CLIC EN CUALQUIER BANDERA FICTICIA, ARRANCA LA CARGA -----
-        const flagsElements = document.querySelectorAll('.fake-flag');
-        flagsElements.forEach(flag => {
+
+        // ----- AL HACER CLIC EN UNA BANDERA, GUARDAR PALETA Y ARRANCAR -----
+        const flags = document.querySelectorAll('.fake-flag');
+        flags.forEach(flag => {
             flag.addEventListener('click', (e) => {
                 e.stopPropagation();
+                const flagId = flag.getAttribute('data-flag');
+                if (flagId && colorSchemes[flagId]) {
+                    currentPalette = colorSchemes[flagId];
+                } else {
+                    // fallback
+                    currentPalette = colorSchemes['1'];
+                }
                 if (!splashDiv.classList.contains('hidden')) {
                     startLoading();
                 }
             });
         });
-        
-        // ----- BOTONES DEL MENÚ -----
+
+        // ----- BOTONES DEL MENÚ (funcionalidad) -----
         document.getElementById('btnUbicacion').addEventListener('click', () => {
             window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
         });
-        
-        // ENTRADAS: deep link para abrir la app de Mercado Pago directamente
+
         document.getElementById('btnEntradas').addEventListener('click', (e) => {
             e.preventDefault();
             const alias = "ellorenzopa.banda";
@@ -468,20 +589,17 @@
             modalTitle.innerText = "Entradas - $4000";
             modalMessage.innerText = `Alias: ${alias}\nMonto: ARS ${monto}\n\nElegí una opción:`;
             modalExtra.innerHTML = '';
-            
+
             const btnOpenMP = document.createElement('button');
             btnOpenMP.innerText = "Abrir Mercado Pago (App)";
             btnOpenMP.classList.add('modal-btn');
             btnOpenMP.addEventListener('click', () => {
-                // Deep link para abrir la app directamente (Android/iOS)
                 const deepLink = "mercadopago://";
                 const webFallback = "https://www.mercadopago.com.ar/transferencias";
-                // Intentamos abrir el deep link con un iframe
                 const iframe = document.createElement('iframe');
                 iframe.style.display = 'none';
                 iframe.src = deepLink;
                 document.body.appendChild(iframe);
-                // Si después de 800ms no se abrió, redirigimos a la web
                 const timeout = setTimeout(() => {
                     window.location.href = webFallback;
                     if (document.body.contains(iframe)) document.body.removeChild(iframe);
@@ -495,7 +613,7 @@
                 }, 1000);
                 closeModal();
             });
-            
+
             const btnCopy = document.createElement('button');
             btnCopy.innerText = "Copiar Alias";
             btnCopy.classList.add('modal-btn');
@@ -506,12 +624,12 @@
                     alert("Copiá manual: " + alias);
                 });
             });
-            
+
             modalExtra.appendChild(btnOpenMP);
             modalExtra.appendChild(btnCopy);
             modal.classList.add('active');
         });
-        
+
         document.getElementById('btnPista').addEventListener('click', () => {
             modalTitle.innerText = "Pista Oculta";
             modalMessage.innerText = '"seremos el centro del temblor"';
@@ -523,7 +641,7 @@
             modalExtra.appendChild(okBtn);
             modal.classList.add('active');
         });
-        
+
         function showToast(msg) {
             const toast = document.createElement('div');
             toast.innerText = msg;
