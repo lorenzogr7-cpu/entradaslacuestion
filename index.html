@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LA CUESTIÓN · Windows 1.0 Fullscreen</title>
+    <title>LA CUESTIÓN · Bandera tuya</title>
+    <!-- Fuente Tiny5 (pixelada) -->
+    <link href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,7 +16,7 @@
 
         body {
             background: #008080;
-            font-family: 'Courier New', 'MS Sans Serif', monospace;
+            font-family: 'Tiny5', 'Courier New', monospace;
             min-height: 100vh;
             height: 100%;
             overflow: hidden;
@@ -23,7 +25,6 @@
             justify-content: center;
         }
 
-        /* Contenedor que ocupa toda la pantalla */
         .win-app {
             width: 100%;
             height: 100vh;
@@ -34,7 +35,6 @@
             justify-content: center;
         }
 
-        /* Ventana que se adapta al 100% del ancho y alto disponible */
         .window {
             background: #c0c0c0;
             border: 2px solid;
@@ -59,19 +59,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: 'Courier New', monospace;
+            font-family: 'Tiny5', monospace;
             flex-shrink: 0;
-        }
-        .title-bar span:first-child {
-            letter-spacing: 1px;
-        }
-        .title-bar span:last-child {
-            background: #c0c0c0;
-            color: black;
-            padding: 0 8px;
-            margin-left: 8px;
-            border: 1px solid #808080;
-            font-size: 0.8rem;
         }
 
         .window-content {
@@ -86,7 +75,6 @@
             justify-content: center;
         }
 
-        /* Botones estilo Win1.0 */
         .win-button {
             background: #c0c0c0;
             border: 2px solid;
@@ -95,7 +83,7 @@
             border-right-color: #808080;
             border-bottom-color: #808080;
             padding: 12px 20px;
-            font-family: 'Courier New', monospace;
+            font-family: 'Tiny5', monospace;
             font-weight: bold;
             font-size: 1rem;
             cursor: pointer;
@@ -115,7 +103,7 @@
             display: block;
             margin: 0 auto;
             width: 100%;
-            max-width: 400px;
+            max-width: 360px;
             height: auto;
             image-rendering: crisp-edges;
             image-rendering: pixelated;
@@ -123,11 +111,46 @@
             border: 1px solid #808080;
         }
 
-        /* Terminal (carga) */
+        /* Selector de banderas */
+        .flag-selector {
+            margin: 20px auto;
+            text-align: center;
+        }
+        .flag-title {
+            font-family: 'Tiny5', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            background: #000080;
+            color: white;
+            display: inline-block;
+            padding: 4px 12px;
+        }
+        .flags-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .flag-item {
+            width: 52px;
+            height: 36px;
+            border: 2px solid #808080;
+            cursor: pointer;
+            transition: all 0.05s linear;
+            image-rendering: pixelated;
+        }
+        .flag-item:active {
+            transform: scale(0.96);
+        }
+        .flag-item.selected {
+            border: 4px solid #ffff00;
+            box-shadow: 0 0 0 2px #000;
+        }
+
+        /* Terminal de carga con fondo dinámico */
         .terminal-win {
-            background: #000000;
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
+            font-family: 'Tiny5', monospace;
             padding: 16px;
             height: 70vh;
             overflow-y: auto;
@@ -135,14 +158,14 @@
             word-break: break-all;
             border: 1px solid #808080;
             font-size: 0.9rem;
+            transition: background 0.2s;
         }
         .terminal-win p {
             margin: 8px 0;
-            border-left: 2px solid #0f0;
+            border-left: 2px solid currentColor;
             padding-left: 10px;
         }
 
-        /* Modal estilo Win1.0 */
         .modal-win {
             position: fixed;
             top: 0;
@@ -172,20 +195,19 @@
             width: 85%;
             max-width: 320px;
             padding: 20px;
+            font-family: 'Tiny5', monospace;
         }
         .modal-dialog h3 {
             background: #000080;
             color: white;
             padding: 6px;
             margin-bottom: 16px;
-            font-size: 1rem;
             text-align: center;
         }
         .modal-dialog p {
             background: #e0e0e0;
             padding: 12px;
             margin: 8px 0;
-            font-family: monospace;
             word-break: break-word;
         }
         .modal-buttons {
@@ -203,7 +225,7 @@
             border-right-color: #808080;
             border-bottom-color: #808080;
             padding: 6px 14px;
-            font-family: monospace;
+            font-family: 'Tiny5', monospace;
             font-weight: bold;
             cursor: pointer;
         }
@@ -213,39 +235,41 @@
             border-right-color: #ffffff;
             border-bottom-color: #ffffff;
         }
-
         footer {
             text-align: center;
             font-size: 0.65rem;
             margin-top: 24px;
             color: #000;
         }
-
         .hidden {
             display: none !important;
         }
-
         @media (max-width: 560px) {
             .win-button { font-size: 0.8rem; padding: 10px 12px; }
-            .title-bar { font-size: 0.8rem; }
             .terminal-win { font-size: 0.7rem; height: 65vh; }
-            canvas { max-width: 300px; }
+            .flag-item { width: 44px; height: 30px; }
         }
     </style>
 </head>
 <body>
 <div class="win-app">
-    <!-- Pantalla 1: mástil + bandera -->
+    <!-- Pantalla 1: mástil + bandera + selector -->
     <div id="splashScreen" class="window">
         <div class="title-bar"><span>Pabellón de Poesía</span><span>⤡</span></div>
         <div class="window-content">
             <canvas id="flagCanvas" width="320" height="240" style="width:100%; max-width:360px; aspect-ratio:320/240"></canvas>
-            <button id="btnEmpezar" class="win-button" style="width:100%; margin-top:24px;">▶ EMPEZAR</button>
-            <footer>Windows 1.0 – 1985</footer>
+            
+            <div class="flag-selector">
+                <div class="flag-title">✦ elegí tu bandera ✦</div>
+                <div class="flags-container" id="flagsContainer"></div>
+            </div>
+            
+            <button id="btnEmpezar" class="win-button" style="width:100%; margin-top:16px;">▶ EMPEZAR</button>
+            <footer>Windows 1.0 – Tiny5 edition</footer>
         </div>
     </div>
 
-    <!-- Pantalla 2: carga de computadora (MS-DOS) -->
+    <!-- Pantalla 2: carga con colores de la bandera elegida -->
     <div id="loadingScreen" class="window hidden">
         <div class="title-bar"><span>MS-DOS Prompt</span><span>⎕</span></div>
         <div class="window-content" style="padding: 6px;">
@@ -265,7 +289,7 @@
                 <button id="btnEntradas" class="win-button">🎟️ ENTRADAS</button>
                 <button id="btnPista" class="win-button">🔍 PISTA</button>
             </div>
-            <footer style="margin-top:32px;">Windows 1.0 – 1985</footer>
+            <footer style="margin-top:32px;">Latinoamérica unida por la poesía</footer>
         </div>
     </div>
 </div>
@@ -284,11 +308,49 @@
 
 <script>
     (function() {
-        // ---------- CANVAS: mástil + bandera flameante (estilo pixel, Windows 1.0) ----------
+        // ---------- DEFINICIÓN DE BANDERAS (colores representativos) ----------
+        const flags = {
+            argentina: { name: "Argentina", colors: ["#75aadb", "#ffffff", "#f0c13a"], bgGradient: "linear-gradient(180deg, #75aadb 33%, #ffffff 33%, #ffffff 66%, #f0c13a 66%)" },
+            mexico: { name: "México", colors: ["#006847", "#ffffff", "#ce1126"], bgGradient: "linear-gradient(90deg, #006847 33%, #ffffff 33%, #ffffff 66%, #ce1126 66%)" },
+            colombia: { name: "Colombia", colors: ["#fcd116", "#003893", "#ce1126"], bgGradient: "linear-gradient(180deg, #fcd116 50%, #003893 25%, #ce1126 25%)" },
+            peru: { name: "Perú", colors: ["#d91023", "#ffffff", "#d91023"], bgGradient: "linear-gradient(90deg, #d91023 33%, #ffffff 33%, #ffffff 66%, #d91023 66%)" },
+            chile: { name: "Chile", colors: ["#ffffff", "#0039a6", "#d52b1e"], bgGradient: "linear-gradient(180deg, #ffffff 50%, #0039a6 25%, #d52b1e 25%)" },
+            uruguay: { name: "Uruguay", colors: ["#ffffff", "#0038a8", "#fcd116"], bgGradient: "repeating-linear-gradient(180deg, #ffffff 0px, #ffffff 30px, #0038a8 30px, #0038a8 60px)" }
+        };
+        
+        let selectedFlagId = "argentina";  // por defecto
+        let flagColors = flags.argentina.colors;
+        
+        // Renderizar mini banderas
+        const flagsContainer = document.getElementById('flagsContainer');
+        function renderFlagSelectors() {
+            flagsContainer.innerHTML = '';
+            for (const [id, data] of Object.entries(flags)) {
+                const flagDiv = document.createElement('div');
+                flagDiv.className = 'flag-item';
+                if (id === selectedFlagId) flagDiv.classList.add('selected');
+                flagDiv.style.background = data.bgGradient;
+                flagDiv.style.backgroundSize = 'cover';
+                flagDiv.style.border = '2px solid #000';
+                flagDiv.title = data.name;
+                flagDiv.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectedFlagId = id;
+                    flagColors = flags[id].colors;
+                    // actualizar borde seleccionado
+                    document.querySelectorAll('.flag-item').forEach(el => el.classList.remove('selected'));
+                    flagDiv.classList.add('selected');
+                });
+                flagsContainer.appendChild(flagDiv);
+            }
+        }
+        renderFlagSelectors();
+        
+        // ---------- CANVAS: mástil y bandera flameante (sin cambios, solo fondo) ----------
         const canvas = document.getElementById('flagCanvas');
         let animFrame = 0;
         let animInterval = null;
-
+        
         function drawFlag(frame) {
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
@@ -296,17 +358,14 @@
             canvas.width = w;
             canvas.height = h;
             ctx.imageSmoothingEnabled = false;
-            
-            // Fondo gris claro de ventana
             ctx.fillStyle = '#c0c0c0';
             ctx.fillRect(0, 0, w, h);
-            // Pasto pixelado base
+            // pasto base
             for (let i=0; i<w/4; i++) {
                 ctx.fillStyle = (i%2) ? '#2d6a2d' : '#1f4f1f';
                 ctx.fillRect(i*4, h-28, 4, 28);
             }
-            
-            // Mástil
+            // mástil
             const mastilX = 100;
             const mastilW = 12;
             const mastilH = 140;
@@ -317,13 +376,11 @@
                 ctx.fillRect(mastilX+3, y, 3, 4);
                 ctx.fillRect(mastilX+7, y+4, 3, 4);
             }
-            // bola superior
             ctx.fillStyle = '#e5b83c';
             ctx.fillRect(mastilX-4, 28, 20, 12);
             ctx.fillStyle = '#b47a22';
             ctx.fillRect(mastilX-2, 22, 16, 6);
-            
-            // Bandera blanca
+            // bandera blanca con texto
             const flagX = mastilX + mastilW;
             const flagY = 44;
             const ancho = 140;
@@ -332,8 +389,7 @@
             ctx.fillRect(flagX, flagY, ancho, alto);
             ctx.fillStyle = '#1f1a10';
             ctx.strokeRect(flagX, flagY, ancho, alto);
-            
-            // Flameo pixelado (borde inferior ondulado)
+            // flameo
             for (let seg = 0; seg < 5; seg++) {
                 let offsetY = flagY+alto - 5 + Math.sin(seg * 1.1 + frame * 0.4) * 2 | 0;
                 ctx.fillStyle = '#fffbe6';
@@ -341,13 +397,11 @@
                 ctx.fillStyle = '#1f1a10';
                 ctx.fillRect(flagX + seg*26, offsetY, 24, 2);
             }
-            // Texto pixel
-            ctx.font = 'bold 8px "Courier New", monospace';
+            ctx.font = 'bold 9px "Tiny5", monospace';
             ctx.fillStyle = '#000';
             ctx.fillText("AQUI SE ESTA", flagX+22, flagY+20);
             ctx.fillText("LEYENDO", flagX+36, flagY+36);
             ctx.fillText("POESIA", flagX+44, flagY+52);
-            // detalles estrella
             ctx.fillStyle = '#ffd966';
             ctx.fillRect(flagX+ancho-12, flagY+8, 5,5);
             ctx.fillRect(flagX+ancho-24, flagY+22, 5,5);
@@ -356,13 +410,11 @@
         function startFlagAnimation() {
             if (animInterval) clearInterval(animInterval);
             let f = 0;
-            animInterval = setInterval(() => {
-                drawFlag(f++);
-            }, 150);
+            animInterval = setInterval(() => { drawFlag(f++); }, 150);
         }
         if (canvas) startFlagAnimation();
-
-        // ---------- CONTROL DE PANTALLAS ----------
+        
+        // ---------- CONTROL DE PANTALLAS CON COLORES DE BANDERA ----------
         const splashDiv = document.getElementById('splashScreen');
         const loadingDiv = document.getElementById('loadingScreen');
         const mainMenuDiv = document.getElementById('mainMenu');
@@ -387,18 +439,27 @@
             intervals = [];
         }
         
-        // CARGA DE COMPUTADORA (MS-DOS)
+        // CARGA con fondos de los colores de la bandera elegida
         function startLoading() {
             splashDiv.classList.add('hidden');
             loadingDiv.classList.remove('hidden');
             mainMenuDiv.classList.add('hidden');
             terminalDiv.innerHTML = '';
+            
+            // aplicar colores de la bandera al fondo del terminal
+            const gradient = flags[selectedFlagId].bgGradient;
+            terminalDiv.style.background = gradient;
+            terminalDiv.style.color = '#000'; // texto oscuro para contraste
+            terminalDiv.style.textShadow = 'none';
+            // ajustar color de borde
+            terminalDiv.style.borderLeft = `4px solid ${flagColors[0]}`;
+            
             const baseMsg = "> la cuestión está sucediendo en este momento";
             const variants = [
                 "[SYS] la cuestión está sucediendo en este momento",
                 "[KERNEL] la cuestión está sucediendo en este momento",
                 "[PROCESO] la cuestión está sucediendo en este momento",
-                "[POESÍA] la cuestión está sucediendo en este momento"
+                `[${flags[selectedFlagId].name.toUpperCase()}] la cuestión está sucediendo en este momento`
             ];
             let lineCount = 0;
             function addLine() {
@@ -406,6 +467,7 @@
                 const p = document.createElement('p');
                 let text = (lineCount % 3 === 0) ? variants[lineCount % variants.length] : baseMsg + " [" + Math.floor(Math.random()*0xFFF).toString(16) + "]";
                 p.textContent = text;
+                p.style.borderLeftColor = flagColors[lineCount % flagColors.length];
                 terminalDiv.appendChild(p);
                 terminalDiv.scrollTop = terminalDiv.scrollHeight;
                 lineCount++;
@@ -433,6 +495,8 @@
             loadingDiv.classList.add('hidden');
             mainMenuDiv.classList.remove('hidden');
             terminalDiv.innerHTML = '';
+            terminalDiv.style.background = ''; // reset
+            terminalDiv.style.color = '';
         }
         
         empezarBtn.addEventListener('click', () => {
@@ -444,20 +508,21 @@
             window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
         });
         
-        // ENTRADAS: modal con opciones, abre MP en nueva pestaña
+        // ENTRADAS: CORREGIDO - abre Mercado Pago sin errores
         document.getElementById('btnEntradas').addEventListener('click', (e) => {
             e.preventDefault();
             const alias = "ellorenzopa.banda";
             const monto = "4000";
             modalTitle.innerText = "Entradas - $4000";
-            modalMessage.innerText = `Alias: ${alias}\nMonto: ARS ${monto}`;
+            modalMessage.innerText = `Alias: ${alias}\nMonto: ARS ${monto}\n\nElegí una opción:`;
             modalExtra.innerHTML = '';
             
             const btnOpenMP = document.createElement('button');
             btnOpenMP.innerText = "Abrir Mercado Pago";
             btnOpenMP.classList.add('modal-btn');
             btnOpenMP.addEventListener('click', () => {
-                window.open('https://www.mercadopago.com.ar/transferencias', '_blank');
+                // Corrección: usar window.open con _blank y sin rel conflictivo
+                window.open('https://www.mercadopago.com.ar/transferencias', '_blank', 'noopener,noreferrer');
                 closeModal();
             });
             
@@ -467,7 +532,9 @@
             btnCopy.addEventListener('click', () => {
                 navigator.clipboard.writeText(alias).then(() => {
                     showToast("Alias copiado: " + alias);
-                }).catch(() => alert(alias));
+                }).catch(() => {
+                    alert("Copiá manual: " + alias);
+                });
             });
             
             modalExtra.appendChild(btnOpenMP);
@@ -497,7 +564,7 @@
             toast.style.backgroundColor = '#ffffcc';
             toast.style.color = '#000';
             toast.style.padding = '8px 16px';
-            toast.style.fontFamily = 'monospace';
+            toast.style.fontFamily = 'Tiny5, monospace';
             toast.style.border = '2px solid #000';
             toast.style.zIndex = '10000';
             document.body.appendChild(toast);
