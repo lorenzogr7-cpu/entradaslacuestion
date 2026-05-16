@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LA CUESTIÓN · Banderas del mundo</title>
+    <title>LA CUESTIÓN · Poesía y Banderas</title>
     <link href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap" rel="stylesheet">
     <style>
         * {
@@ -74,6 +74,91 @@
             justify-content: center;
         }
 
+        /* Contenedor de banderas ficticias */
+        .flags-title {
+            font-family: 'Tiny5', monospace;
+            font-size: 1.2rem;
+            text-align: center;
+            background: #000080;
+            color: white;
+            display: inline-block;
+            padding: 6px 16px;
+            margin: 0 auto 20px auto;
+            letter-spacing: 2px;
+        }
+        .flags-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin: 10px 0 20px;
+            padding: 16px;
+            background: #a0a0a0;
+            border: 1px solid #808080;
+        }
+        .fake-flag {
+            width: 110px;
+            height: 80px;
+            background: #fff;
+            border: 3px solid #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.7rem;
+            font-family: 'Tiny5', monospace;
+            font-weight: bold;
+            padding: 6px;
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.3);
+            background-size: cover;
+            background-position: center;
+            image-rendering: pixelated;
+            cursor: pointer;
+            transition: 0.05s linear;
+        }
+        .fake-flag:active {
+            transform: scale(0.96);
+        }
+        .flag1 { background: linear-gradient(135deg, #ff4d4d 50%, #ffcc00 50%); }
+        .flag2 { background: repeating-linear-gradient(90deg, #00aaff, #00aaff 20px, #ffffff 20px, #ffffff 40px); }
+        .flag3 { background: radial-gradient(circle at 30% 40%, #ff66cc, #9933ff); }
+        .flag4 { background: repeating-linear-gradient(45deg, #33cc33, #33cc33 15px, #ff9933 15px, #ff9933 30px); }
+        .flag5 { background: linear-gradient(0deg, #ff6600, #ffffff, #009933); }
+        .flag-text {
+            background: #fffbe6;
+            color: #000;
+            border: 3px solid #1f1a10;
+            font-size: 0.6rem;
+            line-height: 1.3;
+            text-transform: uppercase;
+            padding: 8px 4px;
+        }
+        .flag-text span {
+            display: block;
+        }
+
+        /* Terminal para el poema */
+        .terminal-win {
+            font-family: 'Tiny5', monospace;
+            padding: 24px 20px;
+            height: 70vh;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid #808080;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            background: #000000;
+            color: #00ff00;
+            transition: background 0.2s;
+        }
+        .poem-line {
+            margin: 12px 0;
+            border-left: 3px solid #0f0;
+            padding-left: 16px;
+        }
+
         .win-button {
             background: #c0c0c0;
             border: 2px solid;
@@ -96,105 +181,6 @@
             border-right-color: #ffffff;
             border-bottom-color: #ffffff;
             transform: translate(1px, 1px);
-        }
-
-        /* Contenedor de banderas ficticias */
-        .flags-row {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 12px;
-            margin: 20px 0;
-            padding: 12px;
-            background: #a0a0a0;
-            border: 1px solid #808080;
-        }
-        .fake-flag {
-            width: 100px;
-            height: 70px;
-            background: #fff;
-            border: 2px solid #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 0.65rem;
-            font-family: 'Tiny5', monospace;
-            font-weight: bold;
-            padding: 4px;
-            box-shadow: 2px 2px 0px rgba(0,0,0,0.3);
-            background-size: cover;
-            background-position: center;
-            image-rendering: pixelated;
-        }
-        /* banderas diversas */
-        .flag1 { background: linear-gradient(135deg, #ff4d4d 50%, #ffcc00 50%); }
-        .flag2 { background: repeating-linear-gradient(90deg, #00aaff, #00aaff 20px, #ffffff 20px, #ffffff 40px); }
-        .flag3 { background: radial-gradient(circle at 30% 40%, #ff66cc, #9933ff); }
-        .flag4 { background: repeating-linear-gradient(45deg, #33cc33, #33cc33 15px, #ff9933 15px, #ff9933 30px); }
-        .flag5 { background: linear-gradient(0deg, #ff6600, #ffffff, #009933); }
-        .flag-text {
-            background: #fffbe6;
-            color: #000;
-            border: 2px solid #1f1a10;
-            font-size: 0.55rem;
-            line-height: 1.2;
-            text-transform: uppercase;
-            padding: 8px 4px;
-        }
-        .flag-text span {
-            display: block;
-        }
-
-        /* Selector de banderas latinas */
-        .flag-selector {
-            margin: 16px auto 0;
-            text-align: center;
-        }
-        .flag-title {
-            font-family: 'Tiny5', monospace;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            background: #000080;
-            color: white;
-            display: inline-block;
-            padding: 4px 12px;
-        }
-        .flags-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        .flag-item {
-            width: 52px;
-            height: 36px;
-            border: 2px solid #808080;
-            cursor: pointer;
-            image-rendering: pixelated;
-        }
-        .flag-item.selected {
-            border: 4px solid #ffff00;
-            box-shadow: 0 0 0 2px #000;
-        }
-
-        .terminal-win {
-            font-family: 'Tiny5', monospace;
-            padding: 16px;
-            height: 65vh;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-all;
-            border: 1px solid #808080;
-            font-size: 0.9rem;
-            transition: background 0.2s;
-        }
-        .terminal-win p {
-            margin: 8px 0;
-            border-left: 2px solid currentColor;
-            padding-left: 10px;
         }
 
         .modal-win {
@@ -276,48 +262,43 @@
             display: none !important;
         }
         @media (max-width: 560px) {
-            .win-button { font-size: 0.8rem; padding: 10px 12px; }
-            .terminal-win { font-size: 0.7rem; height: 60vh; }
-            .fake-flag { width: 70px; height: 50px; font-size: 0.5rem; }
-            .flag-item { width: 44px; height: 30px; }
+            .fake-flag { width: 80px; height: 60px; font-size: 0.55rem; }
+            .terminal-win { font-size: 0.85rem; height: 65vh; }
+            .flags-title { font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
 <div class="win-app">
-    <!-- Pantalla 1: banderas ficticias + selector latino -->
+    <!-- Pantalla 1: solo banderas ficticias -->
     <div id="splashScreen" class="window">
         <div class="title-bar"><span>Galería de Banderas</span><span>⤡</span></div>
         <div class="window-content">
+            <div style="text-align:center;">
+                <div class="flags-title">✦ elegí tu bandera ✦</div>
+            </div>
             <div class="flags-row">
-                <div class="fake-flag flag1"></div>
-                <div class="fake-flag flag2"></div>
-                <div class="fake-flag flag3"></div>
-                <div class="fake-flag flag4"></div>
-                <div class="fake-flag flag5"></div>
-                <div class="fake-flag flag-text">
+                <div class="fake-flag flag1" data-flag="1"></div>
+                <div class="fake-flag flag2" data-flag="2"></div>
+                <div class="fake-flag flag3" data-flag="3"></div>
+                <div class="fake-flag flag4" data-flag="4"></div>
+                <div class="fake-flag flag5" data-flag="5"></div>
+                <div class="fake-flag flag-text" data-flag="poesia">
                     <span>AQUI SE</span>
                     <span>ESTÁ</span>
                     <span>LEYENDO</span>
                     <span>POESÍA</span>
                 </div>
             </div>
-            
-            <div class="flag-selector">
-                <div class="flag-title">✦ elegí tu bandera ✦</div>
-                <div class="flags-container" id="flagsContainer"></div>
-            </div>
-            
-            <button id="btnEmpezar" class="win-button" style="width:100%; margin-top:16px;">▶ EMPEZAR</button>
             <footer>Windows 1.0 – Tiny5 edition</footer>
         </div>
     </div>
 
-    <!-- Pantalla 2: carga con colores de la bandera elegida -->
+    <!-- Pantalla 2: carga con el poema escribiéndose letra por letra -->
     <div id="loadingScreen" class="window hidden">
-        <div class="title-bar"><span>MS-DOS Prompt</span><span>⎕</span></div>
+        <div class="title-bar"><span>Poema en carga</span><span>⎕</span></div>
         <div class="window-content" style="padding: 6px;">
-            <div id="terminalBox" class="terminal-win"></div>
+            <div id="poemTerminal" class="terminal-win"></div>
         </div>
     </div>
 
@@ -352,55 +333,29 @@
 
 <script>
     (function() {
-        // ---------- BANDERAS LATINOAMERICANAS (ficticias pero con colores representativos) ----------
-        const flags = {
-            argentina: { name: "Argentina", colors: ["#75aadb", "#ffffff", "#f0c13a"], bgGradient: "linear-gradient(180deg, #75aadb 33%, #ffffff 33%, #ffffff 66%, #f0c13a 66%)" },
-            mexico: { name: "México", colors: ["#006847", "#ffffff", "#ce1126"], bgGradient: "linear-gradient(90deg, #006847 33%, #ffffff 33%, #ffffff 66%, #ce1126 66%)" },
-            colombia: { name: "Colombia", colors: ["#fcd116", "#003893", "#ce1126"], bgGradient: "linear-gradient(180deg, #fcd116 50%, #003893 25%, #ce1126 25%)" },
-            peru: { name: "Perú", colors: ["#d91023", "#ffffff", "#d91023"], bgGradient: "linear-gradient(90deg, #d91023 33%, #ffffff 33%, #ffffff 66%, #d91023 66%)" },
-            chile: { name: "Chile", colors: ["#ffffff", "#0039a6", "#d52b1e"], bgGradient: "linear-gradient(180deg, #ffffff 50%, #0039a6 25%, #d52b1e 25%)" },
-            uruguay: { name: "Uruguay", colors: ["#ffffff", "#0038a8", "#fcd116"], bgGradient: "repeating-linear-gradient(180deg, #ffffff 0px, #ffffff 30px, #0038a8 30px, #0038a8 60px)" }
-        };
-        
-        let selectedFlagId = "argentina";
-        let flagColors = flags.argentina.colors;
-        
-        // Renderizar mini banderas
-        const flagsContainer = document.getElementById('flagsContainer');
-        function renderFlagSelectors() {
-            flagsContainer.innerHTML = '';
-            for (const [id, data] of Object.entries(flags)) {
-                const flagDiv = document.createElement('div');
-                flagDiv.className = 'flag-item';
-                if (id === selectedFlagId) flagDiv.classList.add('selected');
-                flagDiv.style.background = data.bgGradient;
-                flagDiv.style.backgroundSize = 'cover';
-                flagDiv.style.border = '2px solid #000';
-                flagDiv.title = data.name;
-                flagDiv.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    selectedFlagId = id;
-                    flagColors = flags[id].colors;
-                    document.querySelectorAll('.flag-item').forEach(el => el.classList.remove('selected'));
-                    flagDiv.classList.add('selected');
-                });
-                flagsContainer.appendChild(flagDiv);
-            }
-        }
-        renderFlagSelectors();
-        
-        // ---------- CONTROL DE PANTALLAS ----------
+        // ----- ELEMENTOS DOM -----
         const splashDiv = document.getElementById('splashScreen');
         const loadingDiv = document.getElementById('loadingScreen');
         const mainMenuDiv = document.getElementById('mainMenu');
-        const empezarBtn = document.getElementById('btnEmpezar');
-        const terminalDiv = document.getElementById('terminalBox');
+        const poemTerminal = document.getElementById('poemTerminal');
         const modal = document.getElementById('modalWin');
         const modalTitle = document.getElementById('modalTitle');
         const modalMessage = document.getElementById('modalMessage');
         const modalExtra = document.getElementById('modalExtra');
         const closeModalBtn = document.getElementById('closeModalBtn');
         
+        // ----- POEMA COMPLETO (respetando la "k" y saltos de línea) -----
+        const poemLines = [
+            "y al final,",
+            "un poco más tarde ke ahora,",
+            "cuando estés volviendo a tu casa,",
+            "mirarte y decir:",
+            "hoy fue para mi.",
+            "hoy, a este mundo,",
+            "le robé una noche"
+        ];
+        
+        // ----- FUNCIONES MODAL -----
         function closeModal() {
             modal.classList.remove('active');
             modalExtra.innerHTML = '';
@@ -408,74 +363,99 @@
         closeModalBtn.addEventListener('click', closeModal);
         modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
         
-        let intervals = [];
-        function clearAllIntervals() {
-            intervals.forEach(i => clearInterval(i));
-            intervals = [];
+        // ----- EFECTO MÁQUINA DE ESCRIBIR (letra por letra) -----
+        let typingInterval = null;
+        let currentLineIndex = 0;
+        let currentCharIndex = 0;
+        let currentLineElement = null;
+        
+        function startPoemTyping(callback) {
+            poemTerminal.innerHTML = '';
+            currentLineIndex = 0;
+            currentCharIndex = 0;
+            
+            function typeNextChar() {
+                if (currentLineIndex >= poemLines.length) {
+                    // Terminó el poema
+                    if (typingInterval) clearInterval(typingInterval);
+                    if (callback) callback();
+                    return;
+                }
+                
+                const line = poemLines[currentLineIndex];
+                if (currentCharIndex === 0) {
+                    // Crear nuevo párrafo para esta línea
+                    currentLineElement = document.createElement('p');
+                    currentLineElement.className = 'poem-line';
+                    currentLineElement.textContent = '';
+                    poemTerminal.appendChild(currentLineElement);
+                    poemTerminal.scrollTop = poemTerminal.scrollHeight;
+                }
+                
+                if (currentCharIndex < line.length) {
+                    // Agregar un caracter (puede ser letra o espacio)
+                    currentLineElement.textContent += line[currentCharIndex];
+                    currentCharIndex++;
+                    poemTerminal.scrollTop = poemTerminal.scrollHeight;
+                } else {
+                    // Pasar a la siguiente línea
+                    currentLineIndex++;
+                    currentCharIndex = 0;
+                    currentLineElement = null;
+                    // Pequeña pausa entre líneas (no afecta al intervalo, solo espera)
+                }
+            }
+            
+            typingInterval = setInterval(typeNextChar, 70); // velocidad agradable
         }
         
-        // CARGA con fondos de los colores de la bandera elegida
+        function stopTyping() {
+            if (typingInterval) {
+                clearInterval(typingInterval);
+                typingInterval = null;
+            }
+        }
+        
+        // ----- CARGA: mostrar terminal con el poema y luego pasar al menú -----
+        let loadingActive = false;
         function startLoading() {
+            if (loadingActive) return;
+            loadingActive = true;
+            
             splashDiv.classList.add('hidden');
             loadingDiv.classList.remove('hidden');
             mainMenuDiv.classList.add('hidden');
-            terminalDiv.innerHTML = '';
+            poemTerminal.innerHTML = '';
             
-            const flagData = flags[selectedFlagId];
-            const gradient = flagData.bgGradient;
-            terminalDiv.style.background = gradient;
-            terminalDiv.style.color = '#000';
-            terminalDiv.style.textShadow = 'none';
-            
-            const baseMsg = "> la cuestión está sucediendo en este momento";
-            const variants = [
-                "[SYS] la cuestión está sucediendo en este momento",
-                "[KERNEL] la cuestión está sucediendo en este momento",
-                "[PROCESO] la cuestión está sucediendo en este momento",
-                `[${flagData.name.toUpperCase()}] la cuestión está sucediendo en este momento`
-            ];
-            let lineCount = 0;
-            function addLine() {
-                if (loadingDiv.classList.contains('hidden')) return;
-                const p = document.createElement('p');
-                let text = (lineCount % 3 === 0) ? variants[lineCount % variants.length] : baseMsg + " [" + Math.floor(Math.random()*0xFFF).toString(16) + "]";
-                p.textContent = text;
-                p.style.borderLeftColor = flagColors[lineCount % flagColors.length];
-                terminalDiv.appendChild(p);
-                terminalDiv.scrollTop = terminalDiv.scrollHeight;
-                lineCount++;
-                if (terminalDiv.children.length > 80) {
-                    for(let i=0; i<20; i++) if(terminalDiv.firstChild) terminalDiv.removeChild(terminalDiv.firstChild);
-                }
-            }
-            const fast = setInterval(addLine, 30);
-            intervals.push(fast);
-            setTimeout(() => {
-                clearInterval(fast);
-                const slow = setInterval(addLine, 100);
-                intervals.push(slow);
+            // Iniciar el efecto máquina de escribir
+            startPoemTyping(() => {
+                // Cuando termina el poema, esperar un poco y pasar al menú
                 setTimeout(() => {
-                    clearInterval(slow);
                     finishLoading();
-                }, 2500);
-            }, 2000);
-            const safety = setTimeout(() => finishLoading(), 5500);
-            intervals.push(safety);
+                }, 1200);
+            });
         }
         
         function finishLoading() {
-            clearAllIntervals();
+            stopTyping();
             loadingDiv.classList.add('hidden');
             mainMenuDiv.classList.remove('hidden');
-            terminalDiv.innerHTML = '';
-            terminalDiv.style.background = '';
+            poemTerminal.innerHTML = '';
+            loadingActive = false;
         }
         
-        empezarBtn.addEventListener('click', () => {
-            if (!splashDiv.classList.contains('hidden')) startLoading();
+        // ----- AL HACER CLIC EN CUALQUIER BANDERA FICTICIA, ARRANCA LA CARGA -----
+        const flagsElements = document.querySelectorAll('.fake-flag');
+        flagsElements.forEach(flag => {
+            flag.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!splashDiv.classList.contains('hidden')) {
+                    startLoading();
+                }
+            });
         });
         
-        // ---------- BOTONES DEL MENÚ ----------
+        // ----- BOTONES DEL MENÚ -----
         document.getElementById('btnUbicacion').addEventListener('click', () => {
             window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
         });
@@ -493,10 +473,10 @@
             btnOpenMP.innerText = "Abrir Mercado Pago (App)";
             btnOpenMP.classList.add('modal-btn');
             btnOpenMP.addEventListener('click', () => {
-                // Deep link para abrir la app directamente (en Android/iOS)
-                const deepLink = "mercadopago://";  // esquema universal
+                // Deep link para abrir la app directamente (Android/iOS)
+                const deepLink = "mercadopago://";
                 const webFallback = "https://www.mercadopago.com.ar/transferencias";
-                // Intentamos abrir el deep link
+                // Intentamos abrir el deep link con un iframe
                 const iframe = document.createElement('iframe');
                 iframe.style.display = 'none';
                 iframe.src = deepLink;
@@ -504,11 +484,11 @@
                 // Si después de 800ms no se abrió, redirigimos a la web
                 const timeout = setTimeout(() => {
                     window.location.href = webFallback;
-                    document.body.removeChild(iframe);
+                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
                 }, 800);
                 window.addEventListener('blur', () => {
                     clearTimeout(timeout);
-                    document.body.removeChild(iframe);
+                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
                 }, { once: true });
                 setTimeout(() => {
                     if (document.body.contains(iframe)) document.body.removeChild(iframe);
