@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LA CUESTIÓN · Bandera tuya</title>
-    <!-- Fuente Tiny5 (pixelada) -->
+    <title>LA CUESTIÓN · Banderas del mundo</title>
     <link href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap" rel="stylesheet">
     <style>
         * {
@@ -99,27 +98,64 @@
             transform: translate(1px, 1px);
         }
 
-        canvas {
-            display: block;
-            margin: 0 auto;
-            width: 100%;
-            max-width: 360px;
-            height: auto;
-            image-rendering: crisp-edges;
-            image-rendering: pixelated;
-            background: #c0c0c0;
+        /* Contenedor de banderas ficticias */
+        .flags-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+            padding: 12px;
+            background: #a0a0a0;
             border: 1px solid #808080;
         }
+        .fake-flag {
+            width: 100px;
+            height: 70px;
+            background: #fff;
+            border: 2px solid #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.65rem;
+            font-family: 'Tiny5', monospace;
+            font-weight: bold;
+            padding: 4px;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+            background-size: cover;
+            background-position: center;
+            image-rendering: pixelated;
+        }
+        /* banderas diversas */
+        .flag1 { background: linear-gradient(135deg, #ff4d4d 50%, #ffcc00 50%); }
+        .flag2 { background: repeating-linear-gradient(90deg, #00aaff, #00aaff 20px, #ffffff 20px, #ffffff 40px); }
+        .flag3 { background: radial-gradient(circle at 30% 40%, #ff66cc, #9933ff); }
+        .flag4 { background: repeating-linear-gradient(45deg, #33cc33, #33cc33 15px, #ff9933 15px, #ff9933 30px); }
+        .flag5 { background: linear-gradient(0deg, #ff6600, #ffffff, #009933); }
+        .flag-text {
+            background: #fffbe6;
+            color: #000;
+            border: 2px solid #1f1a10;
+            font-size: 0.55rem;
+            line-height: 1.2;
+            text-transform: uppercase;
+            padding: 8px 4px;
+        }
+        .flag-text span {
+            display: block;
+        }
 
-        /* Selector de banderas */
+        /* Selector de banderas latinas */
         .flag-selector {
-            margin: 20px auto;
+            margin: 16px auto 0;
             text-align: center;
         }
         .flag-title {
             font-family: 'Tiny5', monospace;
             font-size: 0.9rem;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             background: #000080;
             color: white;
             display: inline-block;
@@ -129,7 +165,7 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 12px;
+            gap: 8px;
             margin-top: 8px;
         }
         .flag-item {
@@ -137,22 +173,17 @@
             height: 36px;
             border: 2px solid #808080;
             cursor: pointer;
-            transition: all 0.05s linear;
             image-rendering: pixelated;
-        }
-        .flag-item:active {
-            transform: scale(0.96);
         }
         .flag-item.selected {
             border: 4px solid #ffff00;
             box-shadow: 0 0 0 2px #000;
         }
 
-        /* Terminal de carga con fondo dinámico */
         .terminal-win {
             font-family: 'Tiny5', monospace;
             padding: 16px;
-            height: 70vh;
+            height: 65vh;
             overflow-y: auto;
             white-space: pre-wrap;
             word-break: break-all;
@@ -238,7 +269,7 @@
         footer {
             text-align: center;
             font-size: 0.65rem;
-            margin-top: 24px;
+            margin-top: 20px;
             color: #000;
         }
         .hidden {
@@ -246,18 +277,31 @@
         }
         @media (max-width: 560px) {
             .win-button { font-size: 0.8rem; padding: 10px 12px; }
-            .terminal-win { font-size: 0.7rem; height: 65vh; }
+            .terminal-win { font-size: 0.7rem; height: 60vh; }
+            .fake-flag { width: 70px; height: 50px; font-size: 0.5rem; }
             .flag-item { width: 44px; height: 30px; }
         }
     </style>
 </head>
 <body>
 <div class="win-app">
-    <!-- Pantalla 1: mástil + bandera + selector -->
+    <!-- Pantalla 1: banderas ficticias + selector latino -->
     <div id="splashScreen" class="window">
-        <div class="title-bar"><span>Pabellón de Poesía</span><span>⤡</span></div>
+        <div class="title-bar"><span>Galería de Banderas</span><span>⤡</span></div>
         <div class="window-content">
-            <canvas id="flagCanvas" width="320" height="240" style="width:100%; max-width:360px; aspect-ratio:320/240"></canvas>
+            <div class="flags-row">
+                <div class="fake-flag flag1"></div>
+                <div class="fake-flag flag2"></div>
+                <div class="fake-flag flag3"></div>
+                <div class="fake-flag flag4"></div>
+                <div class="fake-flag flag5"></div>
+                <div class="fake-flag flag-text">
+                    <span>AQUI SE</span>
+                    <span>ESTÁ</span>
+                    <span>LEYENDO</span>
+                    <span>POESÍA</span>
+                </div>
+            </div>
             
             <div class="flag-selector">
                 <div class="flag-title">✦ elegí tu bandera ✦</div>
@@ -308,7 +352,7 @@
 
 <script>
     (function() {
-        // ---------- DEFINICIÓN DE BANDERAS (colores representativos) ----------
+        // ---------- BANDERAS LATINOAMERICANAS (ficticias pero con colores representativos) ----------
         const flags = {
             argentina: { name: "Argentina", colors: ["#75aadb", "#ffffff", "#f0c13a"], bgGradient: "linear-gradient(180deg, #75aadb 33%, #ffffff 33%, #ffffff 66%, #f0c13a 66%)" },
             mexico: { name: "México", colors: ["#006847", "#ffffff", "#ce1126"], bgGradient: "linear-gradient(90deg, #006847 33%, #ffffff 33%, #ffffff 66%, #ce1126 66%)" },
@@ -318,7 +362,7 @@
             uruguay: { name: "Uruguay", colors: ["#ffffff", "#0038a8", "#fcd116"], bgGradient: "repeating-linear-gradient(180deg, #ffffff 0px, #ffffff 30px, #0038a8 30px, #0038a8 60px)" }
         };
         
-        let selectedFlagId = "argentina";  // por defecto
+        let selectedFlagId = "argentina";
         let flagColors = flags.argentina.colors;
         
         // Renderizar mini banderas
@@ -337,7 +381,6 @@
                     e.stopPropagation();
                     selectedFlagId = id;
                     flagColors = flags[id].colors;
-                    // actualizar borde seleccionado
                     document.querySelectorAll('.flag-item').forEach(el => el.classList.remove('selected'));
                     flagDiv.classList.add('selected');
                 });
@@ -346,75 +389,7 @@
         }
         renderFlagSelectors();
         
-        // ---------- CANVAS: mástil y bandera flameante (sin cambios, solo fondo) ----------
-        const canvas = document.getElementById('flagCanvas');
-        let animFrame = 0;
-        let animInterval = null;
-        
-        function drawFlag(frame) {
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const w = 320, h = 240;
-            canvas.width = w;
-            canvas.height = h;
-            ctx.imageSmoothingEnabled = false;
-            ctx.fillStyle = '#c0c0c0';
-            ctx.fillRect(0, 0, w, h);
-            // pasto base
-            for (let i=0; i<w/4; i++) {
-                ctx.fillStyle = (i%2) ? '#2d6a2d' : '#1f4f1f';
-                ctx.fillRect(i*4, h-28, 4, 28);
-            }
-            // mástil
-            const mastilX = 100;
-            const mastilW = 12;
-            const mastilH = 140;
-            ctx.fillStyle = '#8b5a2b';
-            ctx.fillRect(mastilX, 40, mastilW, mastilH);
-            ctx.fillStyle = '#c2823a';
-            for (let y = 40; y < 40+mastilH; y+=8) {
-                ctx.fillRect(mastilX+3, y, 3, 4);
-                ctx.fillRect(mastilX+7, y+4, 3, 4);
-            }
-            ctx.fillStyle = '#e5b83c';
-            ctx.fillRect(mastilX-4, 28, 20, 12);
-            ctx.fillStyle = '#b47a22';
-            ctx.fillRect(mastilX-2, 22, 16, 6);
-            // bandera blanca con texto
-            const flagX = mastilX + mastilW;
-            const flagY = 44;
-            const ancho = 140;
-            const alto = 56;
-            ctx.fillStyle = '#fffbe6';
-            ctx.fillRect(flagX, flagY, ancho, alto);
-            ctx.fillStyle = '#1f1a10';
-            ctx.strokeRect(flagX, flagY, ancho, alto);
-            // flameo
-            for (let seg = 0; seg < 5; seg++) {
-                let offsetY = flagY+alto - 5 + Math.sin(seg * 1.1 + frame * 0.4) * 2 | 0;
-                ctx.fillStyle = '#fffbe6';
-                ctx.fillRect(flagX + seg*26, offsetY, 24, 6);
-                ctx.fillStyle = '#1f1a10';
-                ctx.fillRect(flagX + seg*26, offsetY, 24, 2);
-            }
-            ctx.font = 'bold 9px "Tiny5", monospace';
-            ctx.fillStyle = '#000';
-            ctx.fillText("AQUI SE ESTA", flagX+22, flagY+20);
-            ctx.fillText("LEYENDO", flagX+36, flagY+36);
-            ctx.fillText("POESIA", flagX+44, flagY+52);
-            ctx.fillStyle = '#ffd966';
-            ctx.fillRect(flagX+ancho-12, flagY+8, 5,5);
-            ctx.fillRect(flagX+ancho-24, flagY+22, 5,5);
-        }
-        
-        function startFlagAnimation() {
-            if (animInterval) clearInterval(animInterval);
-            let f = 0;
-            animInterval = setInterval(() => { drawFlag(f++); }, 150);
-        }
-        if (canvas) startFlagAnimation();
-        
-        // ---------- CONTROL DE PANTALLAS CON COLORES DE BANDERA ----------
+        // ---------- CONTROL DE PANTALLAS ----------
         const splashDiv = document.getElementById('splashScreen');
         const loadingDiv = document.getElementById('loadingScreen');
         const mainMenuDiv = document.getElementById('mainMenu');
@@ -446,20 +421,18 @@
             mainMenuDiv.classList.add('hidden');
             terminalDiv.innerHTML = '';
             
-            // aplicar colores de la bandera al fondo del terminal
-            const gradient = flags[selectedFlagId].bgGradient;
+            const flagData = flags[selectedFlagId];
+            const gradient = flagData.bgGradient;
             terminalDiv.style.background = gradient;
-            terminalDiv.style.color = '#000'; // texto oscuro para contraste
+            terminalDiv.style.color = '#000';
             terminalDiv.style.textShadow = 'none';
-            // ajustar color de borde
-            terminalDiv.style.borderLeft = `4px solid ${flagColors[0]}`;
             
             const baseMsg = "> la cuestión está sucediendo en este momento";
             const variants = [
                 "[SYS] la cuestión está sucediendo en este momento",
                 "[KERNEL] la cuestión está sucediendo en este momento",
                 "[PROCESO] la cuestión está sucediendo en este momento",
-                `[${flags[selectedFlagId].name.toUpperCase()}] la cuestión está sucediendo en este momento`
+                `[${flagData.name.toUpperCase()}] la cuestión está sucediendo en este momento`
             ];
             let lineCount = 0;
             function addLine() {
@@ -495,8 +468,7 @@
             loadingDiv.classList.add('hidden');
             mainMenuDiv.classList.remove('hidden');
             terminalDiv.innerHTML = '';
-            terminalDiv.style.background = ''; // reset
-            terminalDiv.style.color = '';
+            terminalDiv.style.background = '';
         }
         
         empezarBtn.addEventListener('click', () => {
@@ -508,7 +480,7 @@
             window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
         });
         
-        // ENTRADAS: CORREGIDO - abre Mercado Pago sin errores
+        // ENTRADAS: deep link para abrir la app de Mercado Pago directamente
         document.getElementById('btnEntradas').addEventListener('click', (e) => {
             e.preventDefault();
             const alias = "ellorenzopa.banda";
@@ -518,11 +490,29 @@
             modalExtra.innerHTML = '';
             
             const btnOpenMP = document.createElement('button');
-            btnOpenMP.innerText = "Abrir Mercado Pago";
+            btnOpenMP.innerText = "Abrir Mercado Pago (App)";
             btnOpenMP.classList.add('modal-btn');
             btnOpenMP.addEventListener('click', () => {
-                // Corrección: usar window.open con _blank y sin rel conflictivo
-                window.open('https://www.mercadopago.com.ar/transferencias', '_blank', 'noopener,noreferrer');
+                // Deep link para abrir la app directamente (en Android/iOS)
+                const deepLink = "mercadopago://";  // esquema universal
+                const webFallback = "https://www.mercadopago.com.ar/transferencias";
+                // Intentamos abrir el deep link
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = deepLink;
+                document.body.appendChild(iframe);
+                // Si después de 800ms no se abrió, redirigimos a la web
+                const timeout = setTimeout(() => {
+                    window.location.href = webFallback;
+                    document.body.removeChild(iframe);
+                }, 800);
+                window.addEventListener('blur', () => {
+                    clearTimeout(timeout);
+                    document.body.removeChild(iframe);
+                }, { once: true });
+                setTimeout(() => {
+                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
+                }, 1000);
                 closeModal();
             });
             
