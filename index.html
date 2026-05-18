@@ -288,7 +288,7 @@
         </div>
     </div>
 
-    <!-- Pantalla 2: carga con poema (centrado y escritura lenta) -->
+    <!-- Pantalla 2: carga con poema -->
     <div id="loadingScreen" class="window hidden">
         <div class="title-bar"><span>Poema en carga</span><span>⎕</span></div>
         <div class="window-content" style="padding: 6px;">
@@ -323,12 +323,12 @@
 
 <script>
     (function() {
-        // ========== 1. PALETAS + BEATS (ritmos distintos por bandera) ==========
+        // ========== 1. PALETAS + BEATS ==========
         const colorSchemes = {
             '1': { 
                 bg: '#2c0a0a', text: '#ffcc00', accent: '#ff4d4d', titleBg: '#8b0000', titleText: '#ffcc66', 
                 windowBg: '#3a1a1a', contentBg: '#4a2a2a', buttonBg: '#8b3a3a', buttonBorder: '#ff9966',
-                beat: { bpm: 70, pattern: [1,0,0,1,0,1,0,0] } // bombo, silencio, silencio, caja
+                beat: { bpm: 70, pattern: [1,0,0,1,0,1,0,0] }
             },
             '2': { 
                 bg: '#0a2a4a', text: '#aaffff', accent: '#00aaff', titleBg: '#003366', titleText: '#ffffff',
@@ -353,7 +353,7 @@
             'poesia': { 
                 bg: '#1a1a2e', text: '#f5e6d3', accent: '#d4af37', titleBg: '#2c2c54', titleText: '#ffdf8c',
                 windowBg: '#2a2a40', contentBg: '#3a3a55', buttonBg: '#4a3a6a', buttonBorder: '#e8c87a',
-                beat: { bpm: 65, pattern: [1,0,0,0,1,0,0,0,1,0,0,1] } // lento
+                beat: { bpm: 65, pattern: [1,0,0,0,1,0,0,0,1,0,0,1] }
             }
         };
 
@@ -361,7 +361,7 @@
         let beatInterval = null;
         let audioCtx = null;
 
-        // ========== 2. SONIDOS: tecla SUTIL (volumen bajo y suave) y beats (bombo) ==========
+        // ========== 2. SONIDOS: máquina de escribir súper suave y realista ==========
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -369,19 +369,44 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
-        // Sonido de máquina de escribir más sutil: volumen bajo, frecuencia suave, envelope corto
+        // Sonido de tecla de máquina de escribir mecánica suave (con ruido blanco filtrado)
         function playTypeSound() {
             if (!audioCtx || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
+            // Usamos un oscilador muy suave + un poco de ruido
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = 700 + Math.random() * 200;
             osc.connect(gain);
+            
+            // Pequeño ruido blanco para textura de tecla (usamos un buffer de ruido)
+            const bufferSize = 4096;
+            const noiseNode = audioCtx.createScriptProcessor(bufferSize, 1, 1);
+            noiseNode.onaudioprocess = function(e) {
+                const output = e.outputBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = (Math.random() * 2 - 1) * 0.03;
+                }
+            };
+            const noiseGain = audioCtx.createGain();
+            noiseGain.gain.value = 0.12;
+            noiseNode.connect(noiseGain);
+            noiseGain.connect(gain);
+            
             gain.connect(audioCtx.destination);
-            osc.frequency.value = 800 + Math.random() * 300; // más grave
-            gain.gain.setValueAtTime(0.025, now);      // volumen muy bajo
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+            gain.gain.setValueAtTime(0.04, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
+            
             osc.start();
-            osc.stop(now + 0.1);
+            osc.stop(now + 0.12);
+            // Desconectar ruido después
+            setTimeout(() => {
+                try {
+                    noiseNode.disconnect();
+                    noiseGain.disconnect();
+                } catch(e) {}
+            }, 150);
         }
 
         function playKick() {
@@ -393,7 +418,7 @@
             osc.frequency.value = 70;
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.setValueAtTime(0.25, now);
             gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
             osc.start();
             osc.stop(now + 0.3);
@@ -426,7 +451,7 @@
             }
         }
 
-        // ========== 3. POEMA: escritura más lenta (pausada, misteriosa) ==========
+        // ========== 3. POEMA con escritura lenta ==========
         const poemLines = [
             "y al final,",
             "un poco más tarde ke ahora,",
@@ -470,14 +495,13 @@
                     currentLineElement.textContent += line[currentCharIndex];
                     currentCharIndex++;
                     terminal.scrollTop = terminal.scrollHeight;
-                    playTypeSound(); // sonido máquina escribir sutil
+                    playTypeSound(); // sonido sutil
                 } else {
                     currentLineIndex++;
                     currentCharIndex = 0;
                     currentLineElement = null;
                 }
             }
-            // Velocidad más lenta: 140ms por letra (dramático)
             typingInterval = setInterval(typeNextChar, 140);
         }
 
@@ -486,7 +510,7 @@
             typingInterval = null;
         }
 
-        // ========== 4. APLICAR COLORES ==========
+        // ========== 4. COLORES ==========
         function applyPaletteToLoading() {
             const terminal = document.getElementById('poemTerminal');
             if (terminal) {
@@ -525,7 +549,7 @@
             if (footer) footer.style.color = currentPalette.accent;
         }
 
-        // ========== 5. FLUJO DE PANTALLAS (el beat empieza SOLO en el menú) ==========
+        // ========== 5. FLUJO (el beat solo en menú) ==========
         let loadingActive = false;
         let currentFlagId = null;
 
@@ -533,7 +557,6 @@
             if (loadingActive) return;
             loadingActive = true;
             currentFlagId = flagId;
-            // No iniciamos el beat todavía, solo preparamos colores
             splashDiv.classList.add('hidden');
             loadingDiv.classList.remove('hidden');
             mainMenuDiv.classList.add('hidden');
@@ -549,14 +572,13 @@
             loadingDiv.classList.add('hidden');
             mainMenuDiv.classList.remove('hidden');
             applyPaletteToMenu();
-            // AHORA SÍ: iniciar el beat (ritmo) al llegar al menú principal
             if (currentFlagId) {
                 startBeat(currentFlagId);
             }
             loadingActive = false;
         }
 
-        // ========== 6. EVENTO DE BANDERAS ==========
+        // ========== 6. BANDERAS ==========
         const flags = document.querySelectorAll('.fake-flag');
         flags.forEach(flag => {
             flag.addEventListener('click', (e) => {
@@ -564,14 +586,14 @@
                 let flagId = flag.getAttribute('data-flag');
                 if (!flagId || !colorSchemes[flagId]) flagId = '1';
                 currentPalette = colorSchemes[flagId];
-                initAudio();   // preparar audio (necesario para teclas y beat después)
+                initAudio();
                 if (!splashDiv.classList.contains('hidden')) {
                     startLoading(flagId);
                 }
             });
         });
 
-        // ========== 7. MODAL Y BOTONES DEL MENÚ ==========
+        // ========== 7. MODAL Y BOTONES (corregidos enlaces apps) ==========
         const splashDiv = document.getElementById('splashScreen');
         const loadingDiv = document.getElementById('loadingScreen');
         const mainMenuDiv = document.getElementById('mainMenu');
@@ -588,12 +610,11 @@
         closeModalBtn.addEventListener('click', closeModal);
         modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
-        // Ubicación
         document.getElementById('btnUbicacion').addEventListener('click', () => {
             window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
         });
 
-        // ENTRADAS: Copiar alias primero, luego apps
+        // ENTRADAS con enlaces funcionales (deep link o web)
         document.getElementById('btnEntradas').addEventListener('click', (e) => {
             e.preventDefault();
             const alias = "ellorenzopa.banda";
@@ -602,7 +623,7 @@
             modalMessage.innerText = `Alias: ${alias}\nMonto: ARS ${monto}`;
             modalExtra.innerHTML = '';
 
-            // Botón Copiar Alias (primero)
+            // Copiar alias
             const btnCopy = document.createElement('button');
             btnCopy.innerText = "📋 COPIAR ALIAS";
             btnCopy.classList.add('modal-btn');
@@ -613,27 +634,60 @@
             });
             modalExtra.appendChild(btnCopy);
 
-            // Botón Mercado Pago
+            // Mercado Pago (deep link + web)
             const btnMP = document.createElement('button');
             btnMP.innerText = "💰 Mercado Pago";
             btnMP.classList.add('modal-btn');
             btnMP.addEventListener('click', () => {
-                window.open('https://www.mercadopago.com.ar/transferencias', '_blank');
+                // Deep link para abrir app (si instalada) o web
+                const deepLink = "mercadopago://";
+                const webUrl = "https://www.mercadopago.com.ar/transferencias";
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = deepLink;
+                document.body.appendChild(iframe);
+                const timeout = setTimeout(() => {
+                    window.open(webUrl, '_blank');
+                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
+                }, 800);
+                window.addEventListener('blur', () => {
+                    clearTimeout(timeout);
+                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
+                }, { once: true });
+                setTimeout(() => {
+                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
+                }, 1000);
                 closeModal();
             });
             modalExtra.appendChild(btnMP);
 
-            // Botón Naranja X
+            // Naranja X (app + web)
             const btnNaranja = document.createElement('button');
             btnNaranja.innerText = "🍊 Naranja X";
             btnNaranja.classList.add('modal-btn');
             btnNaranja.addEventListener('click', () => {
-                window.open('https://www.naranjax.com/', '_blank');
+                const deepLink = "naranjax://";
+                const webUrl = "https://www.naranjax.com/";
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = deepLink;
+                document.body.appendChild(iframe);
+                const timeout = setTimeout(() => {
+                    window.open(webUrl, '_blank');
+                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
+                }, 800);
+                window.addEventListener('blur', () => {
+                    clearTimeout(timeout);
+                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
+                }, { once: true });
+                setTimeout(() => {
+                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
+                }, 1000);
                 closeModal();
             });
             modalExtra.appendChild(btnNaranja);
 
-            // Botón BNA+
+            // BNA+ (solo web, no tiene deep link)
             const btnBNA = document.createElement('button');
             btnBNA.innerText = "🏦 BNA+";
             btnBNA.classList.add('modal-btn');
@@ -646,7 +700,6 @@
             modal.classList.add('active');
         });
 
-        // Pista
         document.getElementById('btnPista').addEventListener('click', () => {
             modalTitle.innerText = "Pista Oculta";
             modalMessage.innerText = '"seremos el centro del temblor"';
