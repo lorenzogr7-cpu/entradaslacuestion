@@ -393,7 +393,7 @@
         let beatInterval = null;
         let audioCtx = null;
 
-        // ========== 2. SONIDOS: tecla rápida + synth indie profundo ==========
+        // ========== 2. SONIDOS: tecla más GRAVE (300-600 Hz) y synth indie ==========
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -401,19 +401,20 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
+        // Sonido de máquina de escribir MÁS GRAVE: frecuencia entre 300 y 600 Hz
         function playTypeSound() {
             if (!audioCtx || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'sine';
-            osc.frequency.value = 1200 + Math.random() * 400;
+            osc.frequency.value = 300 + Math.random() * 300; // grave y profundo
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            gain.gain.setValueAtTime(0.035, now);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+            gain.gain.setValueAtTime(0.045, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
             osc.start();
-            osc.stop(now + 0.06);
+            osc.stop(now + 0.1);
         }
 
         function playSynthNote(baseFreq, duration = 1.2) {
@@ -558,12 +559,9 @@
             if (titleBar) titleBar.style.background = currentPalette.titleBg;
             const contentDiv = document.getElementById('mainMenuContent');
             if (contentDiv) {
-                // Fondo de pantalla con la bandera elegida
                 contentDiv.style.background = currentPalette.flagBackground;
                 contentDiv.style.backgroundSize = 'cover';
                 contentDiv.style.backgroundPosition = 'center';
-                // Para que el texto sea legible, ponemos un overlay semitransparente oscuro si es necesario
-                // Pero los colores de texto y botones ya están ajustados en el scheme
             }
             const menuTitle = document.getElementById('menuTitle');
             if (menuTitle) {
@@ -627,7 +625,7 @@
             });
         });
 
-        // ========== 7. MODAL Y BOTONES (alias actualizado, Mercado Pago sin nueva ventana) ==========
+        // ========== 7. MODAL Y BOTONES (alias ellorenzopa.banda, a nombre de Mafalda Faggian) ==========
         const splashDiv = document.getElementById('splashScreen');
         const loadingDiv = document.getElementById('loadingScreen');
         const mainMenuDiv = document.getElementById('mainMenu');
@@ -648,13 +646,13 @@
             window.open('https://maps.app.goo.gl/PEDo2gsqMswidQzN6', '_blank');
         });
 
-        // ENTRADAS: solo Copiar Alias y Mercado Pago (sin abrir otra ventana)
+        // ENTRADAS: alias ellorenzopa.banda a nombre de Mafalda Faggian
         document.getElementById('btnEntradas').addEventListener('click', (e) => {
             e.preventDefault();
-            const alias = "mafalda.faggian";  // nuevo alias
+            const alias = "ellorenzopa.banda";
             const monto = "4000";
             modalTitle.innerText = "Entradas - $4000";
-            modalMessage.innerText = `Alias (a nombre de Mafalda Faggian): ${alias}\nMonto: pesos ${monto}`;
+            modalMessage.innerText = `Alias: ${alias} (a nombre de Mafalda Faggian)\nMonto: pesos ${monto}`;
             modalExtra.innerHTML = '';
 
             // Copiar alias
@@ -675,13 +673,11 @@
             btnMP.addEventListener('click', () => {
                 const deepLink = "mercadopago://";
                 const webUrl = "https://www.mercadopago.com.ar/transferencias";
-                // Intento de deep link en la misma ventana
                 const iframe = document.createElement('iframe');
                 iframe.style.display = 'none';
                 iframe.src = deepLink;
                 document.body.appendChild(iframe);
                 const timeout = setTimeout(() => {
-                    // Si falla, redirigir en la misma pestaña
                     window.location.href = webUrl;
                     if (document.body.contains(iframe)) document.body.removeChild(iframe);
                 }, 800);
