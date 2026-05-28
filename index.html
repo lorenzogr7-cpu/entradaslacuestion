@@ -333,7 +333,7 @@
                 <button id="btnEntradas" class="win-button">🎟️ ENTRADAS</button>
                 <button id="btnPista" class="win-button">🔍 PISTA</button>
             </div>
-            <footer style="margin-top:32px;">Latinoamérica unida por la poesía</footer>
+            <footer style="margin-top:32px;">la reacción de juntarnos</footer>
         </div>
     </div>
 </div>
@@ -638,7 +638,7 @@
         modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
         document.getElementById('btnUbicacion').addEventListener('click', () => {
-            window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
+            window.open('https://maps.app.goo.gl/PEDo2gsqMswidQzN6', '_blank');
         });
 
         // ENTRADAS: solo Copiar Alias y Mercado Pago (eliminados Naranja X y BNA+)
@@ -647,7 +647,7 @@
             const alias = "ellorenzopa.banda";
             const monto = "4000";
             modalTitle.innerText = "Entradas - $4000";
-            modalMessage.innerText = `Alias: ${alias}\nMonto: ARS ${monto}`;
+            modalMessage.innerText = `Alias: ${alias}\nMonto: pesos ${monto}`;
             modalExtra.innerHTML = '';
 
             // Copiar alias
