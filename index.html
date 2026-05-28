@@ -161,6 +161,29 @@
             max-width: 90%;
         }
 
+        /* Barra de progreso estilo Windows 1.0 */
+        .progress-container {
+            width: 80%;
+            margin: 20px auto 0;
+            background: #808080;
+            border: 1px solid #000;
+            height: 20px;
+            position: relative;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #000080;
+            transition: width 0.1s linear;
+        }
+        .progress-text {
+            font-family: 'Tiny5', monospace;
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 8px;
+            color: #ffffcc;
+        }
+
         .win-button {
             background: #c0c0c0;
             border: 2px solid;
@@ -288,11 +311,15 @@
         </div>
     </div>
 
-    <!-- Pantalla 2: carga con poema -->
+    <!-- Pantalla 2: carga con poema + barra de progreso -->
     <div id="loadingScreen" class="window hidden">
         <div class="title-bar"><span>Poema en carga</span><span>⎕</span></div>
         <div class="window-content" style="padding: 6px;">
             <div id="poemTerminal" class="terminal-win"></div>
+            <div class="progress-container">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
+            <div class="progress-text">la cuestión está sucediendo en este momento</div>
         </div>
     </div>
 
@@ -323,37 +350,37 @@
 
 <script>
     (function() {
-        // ========== 1. PALETAS + BEATS ==========
+        // ========== 1. PALETAS + BEATS INDIE SYNTH ==========
         const colorSchemes = {
             '1': { 
                 bg: '#2c0a0a', text: '#ffcc00', accent: '#ff4d4d', titleBg: '#8b0000', titleText: '#ffcc66', 
                 windowBg: '#3a1a1a', contentBg: '#4a2a2a', buttonBg: '#8b3a3a', buttonBorder: '#ff9966',
-                beat: { bpm: 70, pattern: [1,0,0,1,0,1,0,0] }
+                synth: { bpm: 70, baseFreq: 55, pattern: [1,0,0,1,0,1,0,0] } // baja frecuencia (indie)
             },
             '2': { 
                 bg: '#0a2a4a', text: '#aaffff', accent: '#00aaff', titleBg: '#003366', titleText: '#ffffff',
                 windowBg: '#1a3a5a', contentBg: '#2a4a6a', buttonBg: '#2a6a9a', buttonBorder: '#88ccff',
-                beat: { bpm: 95, pattern: [1,1,0,1,1,0,0,1] }
+                synth: { bpm: 95, baseFreq: 65, pattern: [1,1,0,1,1,0,0,1] }
             },
             '3': { 
                 bg: '#2a0a2a', text: '#ffccff', accent: '#ff66cc', titleBg: '#660066', titleText: '#ffccff',
                 windowBg: '#3a1a3a', contentBg: '#4a2a4a', buttonBg: '#8a3a8a', buttonBorder: '#ff88dd',
-                beat: { bpm: 110, pattern: [1,0,1,0,1,1,0,0] }
+                synth: { bpm: 110, baseFreq: 82, pattern: [1,0,1,0,1,1,0,0] }
             },
             '4': { 
                 bg: '#1a3a1a', text: '#ccff66', accent: '#33cc33', titleBg: '#2d6a2d', titleText: '#ffff99',
                 windowBg: '#2a4a2a', contentBg: '#3a5a3a', buttonBg: '#5a8a3a', buttonBorder: '#aaff66',
-                beat: { bpm: 85, pattern: [1,0,0,1,0,0,1,1] }
+                synth: { bpm: 85, baseFreq: 72, pattern: [1,0,0,1,0,0,1,1] }
             },
             '5': { 
                 bg: '#3a1a00', text: '#ffaa66', accent: '#ff6600', titleBg: '#a0522d', titleText: '#ffdd99',
                 windowBg: '#4a2a10', contentBg: '#5a3a20', buttonBg: '#b86b2a', buttonBorder: '#ffaa66',
-                beat: { bpm: 120, pattern: [1,1,0,0,1,0,0,1] }
+                synth: { bpm: 120, baseFreq: 98, pattern: [1,1,0,0,1,0,0,1] }
             },
             'poesia': { 
                 bg: '#1a1a2e', text: '#f5e6d3', accent: '#d4af37', titleBg: '#2c2c54', titleText: '#ffdf8c',
                 windowBg: '#2a2a40', contentBg: '#3a3a55', buttonBg: '#4a3a6a', buttonBorder: '#e8c87a',
-                beat: { bpm: 65, pattern: [1,0,0,0,1,0,0,0,1,0,0,1] }
+                synth: { bpm: 65, baseFreq: 52, pattern: [1,0,0,0,1,0,0,0,1,0,0,1] }
             }
         };
 
@@ -361,7 +388,7 @@
         let beatInterval = null;
         let audioCtx = null;
 
-        // ========== 2. SONIDOS: máquina de escribir súper suave y realista ==========
+        // ========== 2. SONIDOS: tecla rápida + synth indie profundo ==========
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -369,77 +396,63 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
-        // Sonido de tecla de máquina de escribir mecánica suave (con ruido blanco filtrado)
+        // Sonido de máquina de escribir más rápido (corto, agudo pero suave)
         function playTypeSound() {
             if (!audioCtx || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
-            // Usamos un oscilador muy suave + un poco de ruido
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'sine';
-            osc.frequency.value = 700 + Math.random() * 200;
+            osc.frequency.value = 1200 + Math.random() * 400;
             osc.connect(gain);
-            
-            // Pequeño ruido blanco para textura de tecla (usamos un buffer de ruido)
-            const bufferSize = 4096;
-            const noiseNode = audioCtx.createScriptProcessor(bufferSize, 1, 1);
-            noiseNode.onaudioprocess = function(e) {
-                const output = e.outputBuffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    output[i] = (Math.random() * 2 - 1) * 0.03;
-                }
-            };
-            const noiseGain = audioCtx.createGain();
-            noiseGain.gain.value = 0.12;
-            noiseNode.connect(noiseGain);
-            noiseGain.connect(gain);
-            
             gain.connect(audioCtx.destination);
-            gain.gain.setValueAtTime(0.04, now);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
-            
+            gain.gain.setValueAtTime(0.035, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
             osc.start();
-            osc.stop(now + 0.12);
-            // Desconectar ruido después
-            setTimeout(() => {
-                try {
-                    noiseNode.disconnect();
-                    noiseGain.disconnect();
-                } catch(e) {}
-            }, 150);
+            osc.stop(now + 0.06);
         }
 
-        function playKick() {
+        // Sintetizador indie profundo (pad con envolvente larga)
+        function playSynthNote(baseFreq, duration = 1.2) {
             if (!audioCtx || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.value = 70;
-            osc.connect(gain);
+            const filter = audioCtx.createBiquadFilter();
+            osc.type = 'sawtooth'; // sonido más rico
+            osc.frequency.value = baseFreq;
+            filter.type = 'lowpass';
+            filter.frequency.value = 400;
+            filter.Q.value = 5;
+            osc.connect(filter);
+            filter.connect(gain);
             gain.connect(audioCtx.destination);
-            gain.gain.setValueAtTime(0.25, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+            gain.gain.setValueAtTime(0.18, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
             osc.start();
-            osc.stop(now + 0.3);
+            osc.stop(now + duration);
         }
 
-        function startBeat(flagId) {
+        function startSynthBeat(flagId) {
             stopBeat();
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            const beatData = colorSchemes[flagId].beat;
-            if (!beatData) return;
-            const bpm = beatData.bpm;
-            const pattern = beatData.pattern;
+            const synthData = colorSchemes[flagId].synth;
+            if (!synthData) return;
+            const bpm = synthData.bpm;
+            const pattern = synthData.pattern;
+            const baseFreq = synthData.baseFreq;
             let step = 0;
             const intervalTime = (60 / bpm) * 0.5;
             beatInterval = setInterval(() => {
                 if (!audioCtx || audioCtx.state !== 'running') return;
                 const hit = pattern[step % pattern.length];
-                if (hit === 1) playKick();
+                if (hit === 1) {
+                    // tocar nota con variación sutil
+                    playSynthNote(baseFreq * (0.8 + (step % 3) * 0.1), 1.0);
+                }
                 step++;
             }, intervalTime * 1000);
         }
@@ -451,7 +464,7 @@
             }
         }
 
-        // ========== 3. POEMA con escritura lenta ==========
+        // ========== 3. POEMA con escritura más rápida + barra de progreso ==========
         const poemLines = [
             "y al final,",
             "un poco más tarde ke ahora,",
@@ -463,12 +476,19 @@
         ];
         let typingInterval = null;
         let currentLineIndex = 0, currentCharIndex = 0, currentLineElement = null;
+        let totalChars = 0;
+        let typedChars = 0;
 
         function startPoemTyping(callback) {
             const terminal = document.getElementById('poemTerminal');
             terminal.innerHTML = '';
             currentLineIndex = 0;
             currentCharIndex = 0;
+            typedChars = 0;
+            totalChars = poemLines.join('').length;
+            const progressBar = document.getElementById('progressBar');
+            if (progressBar) progressBar.style.width = '0%';
+            
             terminal.style.display = 'flex';
             terminal.style.flexDirection = 'column';
             terminal.style.justifyContent = 'center';
@@ -494,15 +514,20 @@
                 if (currentCharIndex < line.length) {
                     currentLineElement.textContent += line[currentCharIndex];
                     currentCharIndex++;
+                    typedChars++;
+                    // actualizar barra de progreso
+                    const percent = (typedChars / totalChars) * 100;
+                    if (progressBar) progressBar.style.width = percent + '%';
                     terminal.scrollTop = terminal.scrollHeight;
-                    playTypeSound(); // sonido sutil
+                    playTypeSound();
                 } else {
                     currentLineIndex++;
                     currentCharIndex = 0;
                     currentLineElement = null;
                 }
             }
-            typingInterval = setInterval(typeNextChar, 140);
+            // Velocidad más rápida: 80ms por letra (antes 140)
+            typingInterval = setInterval(typeNextChar, 80);
         }
 
         function stopTyping() {
@@ -522,6 +547,8 @@
             if (loadingTitle) loadingTitle.style.background = currentPalette.titleBg;
             const loadingContent = loadingDiv.querySelector('.window-content');
             if (loadingContent) loadingContent.style.backgroundColor = currentPalette.contentBg;
+            const progressText = document.querySelector('.progress-text');
+            if (progressText) progressText.style.color = currentPalette.text;
         }
 
         function applyPaletteToMenu() {
@@ -549,7 +576,7 @@
             if (footer) footer.style.color = currentPalette.accent;
         }
 
-        // ========== 5. FLUJO (el beat solo en menú) ==========
+        // ========== 5. FLUJO (synth beat solo en menú) ==========
         let loadingActive = false;
         let currentFlagId = null;
 
@@ -563,7 +590,7 @@
             startPoemTyping(() => {
                 setTimeout(() => {
                     finishLoading();
-                }, 1500);
+                }, 1000);
             });
         }
 
@@ -573,7 +600,7 @@
             mainMenuDiv.classList.remove('hidden');
             applyPaletteToMenu();
             if (currentFlagId) {
-                startBeat(currentFlagId);
+                startSynthBeat(currentFlagId);
             }
             loadingActive = false;
         }
@@ -593,7 +620,7 @@
             });
         });
 
-        // ========== 7. MODAL Y BOTONES (corregidos enlaces apps) ==========
+        // ========== 7. MODAL Y BOTONES (solo Mercado Pago + Copiar alias) ==========
         const splashDiv = document.getElementById('splashScreen');
         const loadingDiv = document.getElementById('loadingScreen');
         const mainMenuDiv = document.getElementById('mainMenu');
@@ -614,7 +641,7 @@
             window.open('https://www.google.com/maps/search/?api=1&query=Centro+de+Poesía+Buenos+Aires', '_blank');
         });
 
-        // ENTRADAS con enlaces funcionales (deep link o web)
+        // ENTRADAS: solo Copiar Alias y Mercado Pago (eliminados Naranja X y BNA+)
         document.getElementById('btnEntradas').addEventListener('click', (e) => {
             e.preventDefault();
             const alias = "ellorenzopa.banda";
@@ -639,7 +666,6 @@
             btnMP.innerText = "💰 Mercado Pago";
             btnMP.classList.add('modal-btn');
             btnMP.addEventListener('click', () => {
-                // Deep link para abrir app (si instalada) o web
                 const deepLink = "mercadopago://";
                 const webUrl = "https://www.mercadopago.com.ar/transferencias";
                 const iframe = document.createElement('iframe');
@@ -660,42 +686,6 @@
                 closeModal();
             });
             modalExtra.appendChild(btnMP);
-
-            // Naranja X (app + web)
-            const btnNaranja = document.createElement('button');
-            btnNaranja.innerText = "🍊 Naranja X";
-            btnNaranja.classList.add('modal-btn');
-            btnNaranja.addEventListener('click', () => {
-                const deepLink = "naranjax://";
-                const webUrl = "https://www.naranjax.com/";
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                iframe.src = deepLink;
-                document.body.appendChild(iframe);
-                const timeout = setTimeout(() => {
-                    window.open(webUrl, '_blank');
-                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
-                }, 800);
-                window.addEventListener('blur', () => {
-                    clearTimeout(timeout);
-                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
-                }, { once: true });
-                setTimeout(() => {
-                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
-                }, 1000);
-                closeModal();
-            });
-            modalExtra.appendChild(btnNaranja);
-
-            // BNA+ (solo web, no tiene deep link)
-            const btnBNA = document.createElement('button');
-            btnBNA.innerText = "🏦 BNA+";
-            btnBNA.classList.add('modal-btn');
-            btnBNA.addEventListener('click', () => {
-                window.open('https://www.bna.com.ar/Personas/BNAPlus', '_blank');
-                closeModal();
-            });
-            modalExtra.appendChild(btnBNA);
 
             modal.classList.add('active');
         });
